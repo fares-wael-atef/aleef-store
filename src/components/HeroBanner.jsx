@@ -50,9 +50,9 @@ export default function HeroBanner() {
     goToSlide((current - 1 + SLIDES.length) % SLIDES.length);
   }, [current, goToSlide]);
 
-  // Auto switch slides every 6.5 seconds
+  // Auto switch slides every 6 seconds
   useEffect(() => {
-    autoPlayTimerRef.current = setInterval(nextSlide, 6500);
+    autoPlayTimerRef.current = setInterval(nextSlide, 6000);
     return () => clearInterval(autoPlayTimerRef.current);
   }, [nextSlide]);
 
@@ -77,7 +77,7 @@ export default function HeroBanner() {
   const handleTouchEnd = (e) => {
     if (touchStartX.current === null) return;
     const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) {
+    if (Math.abs(diff) > 35) {
       if (diff > 0) nextSlide();
       else prevSlide();
     }
@@ -91,8 +91,8 @@ export default function HeroBanner() {
 
   return (
     <section
-      className="relative overflow-hidden bg-slate-950 select-none shadow-2xl"
-      style={{ minHeight: '420px', height: 'clamp(420px, 58vh, 580px)' }}
+      className="relative overflow-hidden bg-slate-950 select-none shadow-2xl w-full max-w-full"
+      style={{ minHeight: '380px', height: 'clamp(380px, 50vh, 540px)' }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       dir="rtl"
@@ -101,7 +101,7 @@ export default function HeroBanner() {
       {SLIDES.map((slide, idx) => (
         <div
           key={idx}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+          className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out overflow-hidden ${
             idx === current ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
           }`}
         >
@@ -123,20 +123,20 @@ export default function HeroBanner() {
       ))}
 
       {/* ── Foreground Text & CTAs ── */}
-      <div className="relative z-20 h-full flex items-center">
-        <div className="max-w-7xl mx-auto w-full px-5 sm:px-10">
-          <div className="max-w-xl text-right space-y-3.5 sm:space-y-5">
+      <div className="relative z-20 h-full flex items-center w-full">
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-8 py-6">
+          <div className="max-w-xl text-right space-y-3 sm:space-y-4">
             
             {/* Pill Badge */}
-            <div className="inline-flex items-center gap-2 bg-red-600/30 border border-red-500/40 text-red-300 text-[11px] font-black px-3.5 py-1 rounded-full backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-red-400" />
+            <div className="inline-flex items-center gap-1.5 bg-red-600/30 border border-red-500/40 text-red-300 text-[10px] sm:text-[11px] font-black px-3 py-1 rounded-full backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5 text-red-400 shrink-0" />
               <span>{SLIDES[current].badge}</span>
             </div>
 
             {/* Slide Title */}
             <h1
               key={`title-${current}`}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight animate-fade-in-up"
+              className="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight animate-fade-in-up"
             >
               {SLIDES[current].title}
             </h1>
@@ -144,29 +144,29 @@ export default function HeroBanner() {
             {/* Subtitle */}
             <p
               key={`sub-${current}`}
-              className="text-slate-200 text-sm sm:text-base font-medium leading-relaxed max-w-lg opacity-90 animate-fade-in-up"
+              className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed max-w-lg opacity-90 animate-fade-in-up line-clamp-2 sm:line-clamp-none"
             >
               {SLIDES[current].subtitle}
             </p>
 
             {/* Primary Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex items-center gap-2 sm:gap-3 pt-1 sm:pt-2">
               <button
                 onClick={scrollToProducts}
-                className="bg-red-600 hover:bg-red-700 active:scale-95 text-white font-black text-xs sm:text-sm px-7 py-3.5 rounded-2xl shadow-xl shadow-red-900/50 transition-all flex items-center gap-2"
+                className="flex-1 sm:flex-none justify-center bg-red-600 hover:bg-red-700 active:scale-95 text-white font-black text-xs sm:text-sm px-5 sm:px-7 py-3 rounded-xl sm:rounded-2xl shadow-xl shadow-red-900/50 transition-all flex items-center gap-1.5"
               >
                 <span>تسوق الآن</span>
-                <ArrowDown className="w-4 h-4" />
+                <ArrowDown className="w-4 h-4 shrink-0" />
               </button>
 
               <a
                 href={`https://wa.me/${STORE_INFO.whatsappNumber}?text=${encodeURIComponent('السلام عليكم أليف بيتس، أريد الاستفسار والطلب')}`}
                 target="_blank"
                 rel="noreferrer"
-                className="bg-[#25D366] hover:bg-[#20bd5a] active:scale-95 text-white font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl shadow-xl shadow-emerald-950/40 transition-all flex items-center gap-2"
+                className="flex-1 sm:flex-none justify-center bg-[#25D366] hover:bg-[#20bd5a] active:scale-95 text-white font-black text-xs sm:text-sm px-4 sm:px-6 py-3 rounded-xl sm:rounded-2xl shadow-xl shadow-emerald-950/40 transition-all flex items-center gap-1.5"
               >
-                <MessageCircle className="w-4 h-4" />
-                <span>اطلب عبر الواتساب</span>
+                <MessageCircle className="w-4 h-4 shrink-0" />
+                <span>واتساب</span>
               </a>
             </div>
 
@@ -174,34 +174,34 @@ export default function HeroBanner() {
         </div>
       </div>
 
-      {/* ── Slide Arrows Controls ── */}
+      {/* ── Slide Arrows Controls (Hidden on small mobile to avoid blocking text) ── */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-md border border-white/15 transition-all active:scale-90"
+        className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white items-center justify-center backdrop-blur-md border border-white/15 transition-all active:scale-90"
         aria-label="Previous Slide"
       >
-        <ChevronLeft className="w-6 h-6" />
+        <ChevronLeft className="w-5 h-5" />
       </button>
 
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-md border border-white/15 transition-all active:scale-90"
+        className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white items-center justify-center backdrop-blur-md border border-white/15 transition-all active:scale-90"
         aria-label="Next Slide"
       >
-        <ChevronRight className="w-6 h-6" />
+        <ChevronRight className="w-5 h-5" />
       </button>
 
-      {/* ── Bottom Controls: Dots only (audio removed as requested) ── */}
-      <div className="absolute bottom-5 inset-x-0 z-30 flex items-center justify-center px-6 max-w-7xl mx-auto">
-        <div className="flex items-center gap-2">
+      {/* ── Bottom Controls: Indicator Dots ── */}
+      <div className="absolute bottom-4 inset-x-0 z-30 flex items-center justify-center px-4 max-w-7xl mx-auto">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {SLIDES.map((_, idx) => (
             <button
               key={idx}
               onClick={() => goToSlide(idx)}
               className={`rounded-full transition-all duration-300 ${
                 idx === current
-                  ? 'w-8 h-2.5 bg-red-500 shadow-md shadow-red-500/50'
-                  : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/70'
+                  ? 'w-7 sm:w-8 h-2 sm:h-2.5 bg-red-500 shadow-md shadow-red-500/50'
+                  : 'w-2 sm:w-2.5 h-2 sm:h-2.5 bg-white/40 hover:bg-white/70'
               }`}
               aria-label={`Slide ${idx + 1}`}
             />

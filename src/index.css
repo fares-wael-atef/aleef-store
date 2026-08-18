@@ -5,14 +5,32 @@
 @tailwind utilities;
 
 @layer base {
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
-    @apply bg-white text-slate-800 antialiased font-sans;
+    @apply bg-slate-50 text-slate-800 antialiased font-sans;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    position: relative;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  * { -webkit-tap-highlight-color: transparent; }
+  #root {
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
 }
 
 /* ── Typography ────────────────────────────────────────────────── */
@@ -33,19 +51,19 @@ body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; }
     box-shadow 0.3s cubic-bezier(.22,1,.36,1);
   will-change: transform, box-shadow;
 }
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow:
-    0 4px 6px -1px rgba(0,0,0,.06),
-    0 20px 40px -8px rgba(0,0,0,.12);
+@media (hover: hover) {
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 4px 6px -1px rgba(0,0,0,.06),
+      0 20px 40px -8px rgba(0,0,0,.12);
+  }
+  .product-img {
+    transition: transform 0.6s cubic-bezier(.22,1,.36,1);
+    will-change: transform;
+  }
+  .product-card:hover .product-img { transform: scale(1.06); }
 }
-
-/* ── Image zoom ────────────────────────────────────────────────── */
-.product-img {
-  transition: transform 0.6s cubic-bezier(.22,1,.36,1);
-  will-change: transform;
-}
-.product-card:hover .product-img { transform: scale(1.08); }
 
 /* ── Badge shimmer ─────────────────────────────────────────────── */
 @keyframes shimmer {
@@ -71,26 +89,13 @@ body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; }
 
 /* ── Fade in up ────────────────────────────────────────────────── */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-in-up { animation: fadeInUp 0.5s ease forwards; }
-
-/* ── Pulse dot for live indicator ──────────────────────────────── */
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: .6; transform: scale(1.3); }
-}
-.animate-pulse-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+.animate-fade-in-up { animation: fadeInUp 0.4s ease forwards; }
 
 /* ── Mobile button tap feedback ────────────────────────────────── */
 @media (hover: none) {
   .btn-primary:active,
-  .btn-whatsapp:active { opacity: 0.82; transform: scale(0.96); }
+  .btn-whatsapp:active { opacity: 0.85; transform: scale(0.97); }
 }
-
-/* ── Smooth image loading ──────────────────────────────────────── */
-img { transition: opacity 0.3s ease; }
-
-/* ── Category shortcut card glow on hover ──────────────────────── */
-.cat-card:hover { box-shadow: 0 8px 25px -5px rgba(220,38,38,.15); }

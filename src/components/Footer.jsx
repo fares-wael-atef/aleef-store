@@ -24,26 +24,26 @@ export default function Footer() {
   const { STORE_INFO, navigateToView, unreadOrdersCount } = useStore();
 
   return (
-    <footer className="bg-slate-950 text-white pt-14 pb-8 border-t border-white/5 font-sans" dir="rtl">
-      <div className="max-w-7xl mx-auto px-4 space-y-12">
+    <footer className="bg-slate-950 text-white pt-10 sm:pt-14 pb-8 border-t border-white/5 font-sans w-full max-w-full overflow-hidden" dir="rtl">
+      <div className="max-w-7xl mx-auto px-4 space-y-8 sm:space-y-12">
 
         {/* ── Top perks row ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pb-12 border-b border-white/10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 pb-8 sm:pb-12 border-b border-white/10">
           {PERKS.map(({ icon: Icon, text }) => (
-            <div key={text} className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-red-600/20 flex items-center justify-center shrink-0">
-                <Icon className="w-4 h-4 text-red-400" />
+            <div key={text} className="flex items-center gap-2.5 sm:gap-3">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-red-600/20 flex items-center justify-center shrink-0">
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-400" />
               </div>
-              <span className="text-xs font-semibold text-slate-300 leading-snug">{text}</span>
+              <span className="text-[11px] sm:text-xs font-semibold text-slate-300 leading-snug">{text}</span>
             </div>
           ))}
         </div>
 
         {/* ── Main columns ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10">
 
           {/* Brand */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center gap-2.5">
               <svg viewBox="0 0 100 100" className="w-8 h-8 fill-red-500 shrink-0">
                 <path d="M50 42 C38 42 27 50 23 62 C18 76 20 87 31 90 C38 92.5 44.5 89 50 89 C55.5 89 62 92.5 69 90 C80 87 82 76 77 62 C73 50 62 42 50 42Z" />
@@ -53,40 +53,40 @@ export default function Footer() {
                 <ellipse cx="82" cy="42" rx="11" ry="16" transform="rotate(35 82 42)" />
               </svg>
               <div>
-                <div className="text-lg font-black text-white leading-none">Aleef Pets</div>
+                <div className="text-base sm:text-lg font-black text-white leading-none">Aleef Pets</div>
                 <div className="text-xs text-slate-400 font-medium">أليف بيتس</div>
               </div>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed font-medium">
               متجرك المتخصص في أجود أنواع طعام القطط والكلاب والطيور مع توصيل سريع لجميع محافظات مصر.
             </p>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap gap-2">
               <a
                 href={`https://wa.me/${STORE_INFO.whatsappNumber}?text=السلام%20عليكم%20أليف%20بيتس`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black px-4 py-2.5 rounded-xl transition-colors w-fit shadow"
+                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black px-3.5 py-2 rounded-xl transition-colors shadow"
               >
-                <MessageCircle className="w-4 h-4" />
-                واتساب: {STORE_INFO.phone1}
+                <MessageCircle className="w-3.5 h-3.5" />
+                {STORE_INFO.phone1}
               </a>
               <a
                 href={`https://wa.me/${STORE_INFO.whatsappNumber2}?text=السلام%20عليكم%20أليف%20بيتس`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black px-4 py-2.5 rounded-xl transition-colors w-fit shadow"
+                className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black px-3.5 py-2 rounded-xl transition-colors shadow"
               >
-                <MessageCircle className="w-4 h-4" />
-                واتساب: {STORE_INFO.phone2}
+                <MessageCircle className="w-3.5 h-3.5" />
+                {STORE_INFO.phone2}
               </a>
             </div>
           </div>
 
           {/* Quick links */}
-          <div className="space-y-3">
+          <div className="space-y-2.5 sm:space-y-3">
             <h4 className="text-xs font-black uppercase tracking-widest text-red-400">أقسام المتجر</h4>
-            <ul className="space-y-2">
-              {NAV_LINKS.map((l) => (
+            <ul className="space-y-1.5 sm:space-y-2">
+              {NAV_LINKS.slice(0, 5).map((l) => (
                 <li key={l.label}>
                   <a href="#products-section" className="text-xs text-slate-400 hover:text-white transition-colors font-medium leading-relaxed">
                     {l.label}
@@ -97,20 +97,19 @@ export default function Footer() {
           </div>
 
           {/* Policy */}
-          <div className="space-y-3">
+          <div className="space-y-2.5 sm:space-y-3">
             <h4 className="text-xs font-black uppercase tracking-widest text-red-400">الخدمة والسياسة</h4>
-            <ul className="space-y-2 text-xs text-slate-400 font-medium">
+            <ul className="space-y-1.5 sm:space-y-2 text-xs text-slate-400 font-medium">
               <li className="hover:text-white transition-colors cursor-default">سياسة الشحن والتوصيل</li>
-              <li className="hover:text-white transition-colors cursor-default">سياسة الاسترجاع والاستبدال</li>
               <li className="hover:text-white transition-colors cursor-default">ضمان المنتجات الأصلية 100%</li>
               <li className="hover:text-white transition-colors cursor-default">أسئلة شائعة</li>
               <li>
                 <button
                   onClick={() => navigateToView('admin')}
-                  className="flex items-center gap-1.5 text-red-400 hover:text-red-300 font-bold transition-colors"
+                  className="flex items-center gap-1.5 text-red-400 hover:text-red-300 font-bold transition-colors pt-1"
                 >
                   <Shield className="w-3.5 h-3.5" />
-                  <span>دخول لوحة الإدارة (Admin Portal)</span>
+                  <span>دخول لوحة الإدارة (Admin)</span>
                   {unreadOrdersCount > 0 && (
                     <span className="w-4 h-4 bg-red-600 text-white font-black rounded-full flex items-center justify-center text-[9px]">
                       {unreadOrdersCount}
@@ -122,9 +121,9 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="space-y-3">
+          <div className="space-y-2.5 sm:space-y-3">
             <h4 className="text-xs font-black uppercase tracking-widest text-red-400">التواصل والمواعيد</h4>
-            <div className="space-y-3 text-xs">
+            <div className="space-y-2 text-xs">
               <div className="flex items-start gap-2 text-slate-400">
                 <MapPin className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                 <span className="font-medium leading-snug">{STORE_INFO.address}</span>
@@ -133,32 +132,24 @@ export default function Footer() {
                 <Clock className="w-4 h-4 text-red-400 shrink-0" />
                 <span className="font-medium">{STORE_INFO.deliveryHours}</span>
               </div>
-              <div className="flex items-center gap-2 text-slate-400">
-                <Phone className="w-4 h-4 text-red-400 shrink-0" />
-                <span className="font-mono font-bold text-white">{STORE_INFO.phone1}</span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-400">
-                <Phone className="w-4 h-4 text-red-400 shrink-0" />
-                <span className="font-mono font-bold text-white">{STORE_INFO.phone2}</span>
-              </div>
             </div>
           </div>
 
         </div>
 
         {/* ── Bottom bar ── */}
-        <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="pt-6 sm:pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 text-center sm:text-right">
           <p>© {new Date().getFullYear()} Aleef Pets — أليف بيتس مصر. جميع الحقوق محفوظة.</p>
-          <div className="flex items-center gap-4 font-semibold text-slate-400">
+          <div className="flex items-center justify-center gap-3 font-semibold text-slate-400 flex-wrap">
             <span>دفع عند الاستلام</span>
-            <span className="w-1 h-1 rounded-full bg-slate-600" />
+            <span>·</span>
             <span>فيزا وانستاباي</span>
-            <span className="w-1 h-1 rounded-full bg-slate-600" />
+            <span>·</span>
             <button
               onClick={() => navigateToView('admin')}
-              className="text-slate-400 hover:text-red-400 flex items-center gap-1 transition-colors"
+              className="text-slate-400 hover:text-red-400 inline-flex items-center gap-1 transition-colors"
             >
-              <Shield className="w-3.5 h-3.5" />
+              <Shield className="w-3 h-3" />
               لوحة الإدارة
             </button>
           </div>

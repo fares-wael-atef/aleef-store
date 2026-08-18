@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
-import { Search, ShoppingBag, Heart, MessageCircle, X, Shield, Package } from 'lucide-react';
+import { Search, ShoppingBag, Heart, MessageCircle, X, Shield } from 'lucide-react';
 import { SPECIES_LIST } from '../data/products';
 
 export default function Navbar() {
@@ -18,28 +18,31 @@ export default function Navbar() {
   } = useStore();
 
   return (
-    <header className="sticky top-0 z-40 shadow-sm font-sans" dir="rtl">
+    <header className="sticky top-0 z-40 shadow-sm font-sans w-full max-w-full overflow-hidden" dir="rtl">
 
       {/* ── Top Announcement & Admin Quick Bar ── */}
-      <div className="bg-slate-950 text-white py-1 px-4 text-[11px] sm:text-xs font-semibold tracking-wide border-b border-white/5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="bg-slate-950 text-white py-1 px-3 sm:px-4 text-[10px] sm:text-xs font-semibold tracking-wide border-b border-white/5 w-full">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 overflow-hidden">
           
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          {/* Announcement text */}
+          <div className="flex items-center gap-1.5 min-w-0 truncate">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             <span className="truncate">
-              شحن مجاني فوق {STORE_INFO.freeShippingThreshold || 500} ج.م · طلب فوري عبر الواتساب · منتجات أصلية 100%
+              شحن مجاني فوق {STORE_INFO.freeShippingThreshold || 500} ج.م · طلب بالواتساب 🇪🇬
             </span>
           </div>
 
           {/* Admin Portal Quick Switcher */}
           <button
             onClick={() => navigateToView('admin')}
-            className="flex items-center gap-1.5 bg-red-950/70 hover:bg-red-900 border border-red-500/40 text-red-300 hover:text-white px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black transition-all shrink-0"
+            className="flex items-center gap-1 bg-red-950/70 hover:bg-red-900 border border-red-500/40 text-red-300 hover:text-white px-2 py-0.5 rounded-full text-[10px] font-bold transition-all shrink-0"
+            title="لوحة تحكم الإدارة"
           >
             <Shield className="w-3 h-3 text-red-400" />
-            <span>لوحة الإدارة (Admin)</span>
+            <span className="hidden sm:inline">لوحة الإدارة</span>
+            <span>Admin</span>
             {unreadOrdersCount > 0 && (
-              <span className="w-4 h-4 bg-red-600 text-white font-black rounded-full flex items-center justify-center text-[9px] animate-pulse">
+              <span className="w-3.5 h-3.5 bg-red-600 text-white font-black rounded-full flex items-center justify-center text-[8px] animate-pulse">
                 {unreadOrdersCount}
               </span>
             )}
@@ -49,15 +52,15 @@ export default function Navbar() {
       </div>
 
       {/* ── Main Red Header ── */}
-      <div className="bg-[#DC2626]">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3 sm:gap-5">
+      <div className="bg-[#DC2626] px-3 sm:px-4 py-2.5 sm:py-3 w-full">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
 
           {/* Logo */}
           <button
             onClick={() => navigateToView('store')}
-            className="flex items-center gap-2.5 shrink-0 group text-right cursor-pointer"
+            className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 group text-right cursor-pointer"
           >
-            <div className="w-10 h-10 sm:w-11 sm:h-11 shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0">
               <svg viewBox="0 0 100 100" className="w-full h-full fill-white transition-transform duration-300 group-hover:scale-105">
                 <path d="M50 42 C38 42 27 50 23 62 C18 76 20 87 31 90 C38 92.5 44.5 89 50 89 C55.5 89 62 92.5 69 90 C80 87 82 76 77 62 C73 50 62 42 50 42Z" />
                 <ellipse cx="18" cy="42" rx="11" ry="16" transform="rotate(-35 18 42)" />
@@ -66,35 +69,35 @@ export default function Navbar() {
                 <ellipse cx="82" cy="42" rx="11" ry="16" transform="rotate(35 82 42)" />
               </svg>
             </div>
-            <div className="w-px h-9 bg-white/30 shrink-0" />
+            <div className="w-px h-7 sm:h-8 bg-white/30 shrink-0 hidden xs:block" />
             <div className="flex flex-col leading-none">
-              <span className="text-[1.5rem] sm:text-[1.75rem] font-black text-white tracking-tight leading-none">
+              <span className="text-lg sm:text-2xl font-black text-white tracking-tight leading-none font-sans">
                 Aleef Pets
               </span>
-              <span className="text-[0.72rem] font-semibold text-red-100 mt-0.5">
+              <span className="text-[10px] sm:text-xs font-semibold text-red-100 mt-0.5 hidden xs:block">
                 أليف بيتس
               </span>
             </div>
           </button>
 
           {/* Search */}
-          <div className="flex-1 max-w-2xl">
+          <div className="flex-1 min-w-0 max-w-xl">
             <div className="relative flex items-center">
-              <Search className="absolute right-3 w-4 h-4 text-slate-400 pointer-events-none" />
+              <Search className="absolute right-3 w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ابحث عن طعام قطط، كلاب، رمل، ألعاب..."
-                className="w-full pr-9 pl-9 py-2 sm:py-2.5 bg-white rounded-xl text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-inner"
+                placeholder="ابحث عن طعام، رمل..."
+                className="w-full pr-8 pl-7 sm:pr-9 sm:pl-9 py-1.5 sm:py-2 bg-white rounded-xl text-xs sm:text-sm font-bold text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/60 shadow-inner truncate"
                 dir="rtl"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute left-3 text-slate-400 hover:text-slate-700 transition-colors"
+                  className="absolute left-2.5 text-slate-400 hover:text-slate-700 p-0.5"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
@@ -114,10 +117,17 @@ export default function Navbar() {
             </a>
 
             {/* Wishlist */}
-            <button className="relative p-2 text-white hover:bg-white/15 rounded-xl transition-colors">
+            <button 
+              onClick={() => {
+                const el = document.getElementById('products-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="relative p-1.5 sm:p-2 text-white hover:bg-white/15 rounded-xl transition-colors"
+              title="المفضلة"
+            >
               <Heart className="w-5 h-5 sm:w-6 sm:h-6" />
               {wishlist.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-white text-red-600 font-black text-[10px] rounded-full flex items-center justify-center leading-none">
+                <span className="absolute 0 top-0.5 -right-0.5 w-4 h-4 bg-white text-red-600 font-black text-[10px] rounded-full flex items-center justify-center leading-none">
                   {wishlist.length}
                 </span>
               )}
@@ -126,12 +136,13 @@ export default function Navbar() {
             {/* Cart */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center gap-1.5 bg-white text-red-600 hover:bg-red-50 px-3 py-2 rounded-xl font-black text-sm transition-all shadow"
+              className="relative flex items-center gap-1 sm:gap-1.5 bg-white text-red-600 hover:bg-red-50 p-1.5 sm:px-3 sm:py-2 rounded-xl font-black text-xs sm:text-sm transition-all shadow"
+              title="سلة التسوق"
             >
               <ShoppingBag className="w-5 h-5" />
               <span className="hidden sm:inline">السلة</span>
               {totalItemsCount > 0 && (
-                <span className="w-5 h-5 bg-red-600 text-white font-black text-[11px] rounded-full flex items-center justify-center leading-none shadow-sm">
+                <span className="w-4 h-4 sm:w-5 sm:h-5 bg-red-600 text-white font-black text-[10px] sm:text-[11px] rounded-full flex items-center justify-center leading-none shadow-sm">
                   {totalItemsCount}
                 </span>
               )}
@@ -142,13 +153,13 @@ export default function Navbar() {
       </div>
 
       {/* ── Species Tab Bar ── */}
-      <div className="bg-white border-b border-slate-100 overflow-x-auto scrollbar-none shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 flex items-center gap-1 py-0 min-w-max">
+      <div className="bg-white border-b border-slate-100 overflow-x-auto scrollbar-none shadow-sm w-full">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 flex items-center gap-1 py-0 min-w-max">
           {SPECIES_LIST.map((sp) => (
             <button
               key={sp.id}
               onClick={() => setSelectedSpecies(sp.id)}
-              className={`px-4 sm:px-5 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 transition-all ${
+              className={`px-3 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 transition-all ${
                 selectedSpecies === sp.id
                   ? 'border-red-600 text-red-600'
                   : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-200'
