@@ -120,7 +120,7 @@ export default function CheckoutModal() {
         <div className="bg-[#DC2626] p-4 text-white flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center font-bold text-lg backdrop-blur-sm">
-              📍
+              <MapPin className="w-4 h-4 text-white" />
             </div>
             <div>
               <h3 className="text-base font-black tracking-tight">{t('checkoutTitle')}</h3>
@@ -288,24 +288,24 @@ export default function CheckoutModal() {
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('cod')}
-                    className={`p-3 rounded-xl border font-bold text-center transition-all ${
+                    className={`p-3 rounded-xl border font-bold text-center transition-all flex items-center justify-center gap-1.5 ${
                       paymentMethod === 'cod'
                         ? 'border-red-600 bg-red-50 text-red-700'
                         : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                     }`}
                   >
-                    💵 {t('cashOnDelivery')}
+                    <span>{t('cashOnDelivery')}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('card-delivery')}
-                    className={`p-3 rounded-xl border font-bold text-center transition-all ${
+                    className={`p-3 rounded-xl border font-bold text-center transition-all flex items-center justify-center gap-1.5 ${
                       paymentMethod === 'card-delivery'
                         ? 'border-red-600 bg-red-50 text-red-700'
                         : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                     }`}
                   >
-                    💳 {t('cardOnDelivery')}
+                    <span>{t('cardOnDelivery')}</span>
                   </button>
                 </div>
               </div>
