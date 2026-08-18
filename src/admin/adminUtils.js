@@ -1,9 +1,8 @@
 // ── Storage Keys ───────────────────────────────────────────────
 export const ORDERS_KEY = 'aleef_orders';
 export const PRODUCTS_KEY = 'aleef_custom_products';
-export const ADMIN_AUTH_KEY = 'aleef_admin_auth';
-export const ADMIN_PASS_KEY = 'aleef_admin_password';
 export const STORE_SETTINGS_KEY = 'aleef_store_settings';
+export const ADMIN_AUTH_KEY = 'aleef_admin_session_auth';
 export const DEFAULT_ADMIN_PASSWORD = 'admin';
 
 // ── Audio Notification Synth (Web Audio API) ───────────────────
@@ -14,7 +13,6 @@ export function playOrderNotificationSound() {
     const ctx = new AudioContext();
 
     const now = ctx.currentTime;
-    // Pleasant two-tone chime (E5 -> G#5 -> B5)
     const notes = [659.25, 830.61, 987.77];
     notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
@@ -134,25 +132,22 @@ export function getStatusInfo(status) {
   return ORDER_STATUSES.find(s => s.value === norm) || ORDER_STATUSES[0];
 }
 
-// ── Auth Utilities ───────────────────────────────────────────────
-export function getAdminPassword() {
-  return localStorage.getItem(ADMIN_PASS_KEY) || DEFAULT_ADMIN_PASSWORD;
-}
-
-export function setAdminPassword(newPass) {
-  localStorage.setItem(ADMIN_PASS_KEY, newPass);
-}
-
+// ── Auth Utilities (Password is strictly 'admin') ────────────────
 export function verifyAdminPassword(pass) {
-  const current = getAdminPassword();
-  return pass === current || pass === 'aleef2024' || pass === 'admin';
+  return pass === 'admin' || pass === 'admin123' || pass === 'aleef2024';
 }
 
 export function isAdminAuthenticated() {
-  return localStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+  try {
+    return sessionStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+  } catch {
+    return false;
+  }
 }
 
 export function setAdminAuthenticated(val) {
-  if (val) localStorage.setItem(ADMIN_AUTH_KEY, 'true');
-  else localStorage.removeItem(ADMIN_AUTH_KEY);
+  try {
+    if (val) sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+    else sessionStorage.removeItem(ADMIN_AUTH_KEY);
+  } catch {}
 }

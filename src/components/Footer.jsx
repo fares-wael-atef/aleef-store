@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
-import { MessageCircle, Phone, MapPin, Clock, ShieldCheck, Truck, CreditCard, Shield } from 'lucide-react';
+import { MessageCircle, Phone, MapPin, Clock, ShieldCheck, Truck, CreditCard } from 'lucide-react';
 
 const NAV_LINKS = [
   { label: "طعام القطط الجاف",    species: "cat",  cat: "dry-food"   },
@@ -21,7 +21,7 @@ const PERKS = [
 ];
 
 export default function Footer() {
-  const { STORE_INFO, navigateToView, unreadOrdersCount } = useStore();
+  const { STORE_INFO } = useStore();
 
   return (
     <footer className="bg-slate-950 text-white pt-10 sm:pt-14 pb-8 border-t border-white/5 font-sans w-full max-w-full overflow-hidden" dir="rtl">
@@ -86,7 +86,7 @@ export default function Footer() {
           <div className="space-y-2.5 sm:space-y-3">
             <h4 className="text-xs font-black uppercase tracking-widest text-red-400">أقسام المتجر</h4>
             <ul className="space-y-1.5 sm:space-y-2">
-              {NAV_LINKS.slice(0, 5).map((l) => (
+              {NAV_LINKS.slice(0, 6).map((l) => (
                 <li key={l.label}>
                   <a href="#products-section" className="text-xs text-slate-400 hover:text-white transition-colors font-medium leading-relaxed">
                     {l.label}
@@ -101,22 +101,9 @@ export default function Footer() {
             <h4 className="text-xs font-black uppercase tracking-widest text-red-400">الخدمة والسياسة</h4>
             <ul className="space-y-1.5 sm:space-y-2 text-xs text-slate-400 font-medium">
               <li className="hover:text-white transition-colors cursor-default">سياسة الشحن والتوصيل</li>
+              <li className="hover:text-white transition-colors cursor-default">سياسة الاستبدال والاسترجاع</li>
               <li className="hover:text-white transition-colors cursor-default">ضمان المنتجات الأصلية 100%</li>
-              <li className="hover:text-white transition-colors cursor-default">أسئلة شائعة</li>
-              <li>
-                <button
-                  onClick={() => navigateToView('admin')}
-                  className="flex items-center gap-1.5 text-red-400 hover:text-red-300 font-bold transition-colors pt-1"
-                >
-                  <Shield className="w-3.5 h-3.5" />
-                  <span>دخول لوحة الإدارة (Admin)</span>
-                  {unreadOrdersCount > 0 && (
-                    <span className="w-4 h-4 bg-red-600 text-white font-black rounded-full flex items-center justify-center text-[9px]">
-                      {unreadOrdersCount}
-                    </span>
-                  )}
-                </button>
-              </li>
+              <li className="hover:text-white transition-colors cursor-default">تواصل معنا للدعم الفني</li>
             </ul>
           </div>
 
@@ -132,12 +119,16 @@ export default function Footer() {
                 <Clock className="w-4 h-4 text-red-400 shrink-0" />
                 <span className="font-medium">{STORE_INFO.deliveryHours}</span>
               </div>
+              <div className="flex items-center gap-2 text-slate-400">
+                <Phone className="w-4 h-4 text-red-400 shrink-0" />
+                <span className="font-mono font-bold text-white">{STORE_INFO.phone1} / {STORE_INFO.phone2}</span>
+              </div>
             </div>
           </div>
 
         </div>
 
-        {/* ── Bottom bar ── */}
+        {/* ── Bottom bar (Clean customer copyright, no admin button) ── */}
         <div className="pt-6 sm:pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 text-center sm:text-right">
           <p>© {new Date().getFullYear()} Aleef Pets — أليف بيتس مصر. جميع الحقوق محفوظة.</p>
           <div className="flex items-center justify-center gap-3 font-semibold text-slate-400 flex-wrap">
@@ -145,13 +136,7 @@ export default function Footer() {
             <span>·</span>
             <span>فيزا وانستاباي</span>
             <span>·</span>
-            <button
-              onClick={() => navigateToView('admin')}
-              className="text-slate-400 hover:text-red-400 inline-flex items-center gap-1 transition-colors"
-            >
-              <Shield className="w-3 h-3" />
-              لوحة الإدارة
-            </button>
+            <span>خدمة التوصيل السريع</span>
           </div>
         </div>
 

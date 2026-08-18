@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
-import { Search, ShoppingBag, Heart, MessageCircle, X, Shield } from 'lucide-react';
+import { Search, ShoppingBag, Heart, MessageCircle, X } from 'lucide-react';
 import { SPECIES_LIST } from '../data/products';
 
 export default function Navbar() {
@@ -13,41 +13,19 @@ export default function Navbar() {
     setSelectedSpecies,
     totalItemsCount,
     STORE_INFO,
-    navigateToView,
-    unreadOrdersCount
+    navigateToView
   } = useStore();
 
   return (
     <header className="sticky top-0 z-40 shadow-sm font-sans w-full max-w-full overflow-hidden" dir="rtl">
 
-      {/* ── Top Announcement & Admin Quick Bar ── */}
-      <div className="bg-slate-950 text-white py-1 px-3 sm:px-4 text-[10px] sm:text-xs font-semibold tracking-wide border-b border-white/5 w-full">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 overflow-hidden">
-          
-          {/* Announcement text */}
-          <div className="flex items-center gap-1.5 min-w-0 truncate">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="truncate">
-              شحن مجاني فوق {STORE_INFO.freeShippingThreshold || 500} ج.م · طلب بالواتساب 🇪🇬
-            </span>
-          </div>
-
-          {/* Admin Portal Quick Switcher */}
-          <button
-            onClick={() => navigateToView('admin')}
-            className="flex items-center gap-1 bg-red-950/70 hover:bg-red-900 border border-red-500/40 text-red-300 hover:text-white px-2 py-0.5 rounded-full text-[10px] font-bold transition-all shrink-0"
-            title="لوحة تحكم الإدارة"
-          >
-            <Shield className="w-3 h-3 text-red-400" />
-            <span className="hidden sm:inline">لوحة الإدارة</span>
-            <span>Admin</span>
-            {unreadOrdersCount > 0 && (
-              <span className="w-3.5 h-3.5 bg-red-600 text-white font-black rounded-full flex items-center justify-center text-[8px] animate-pulse">
-                {unreadOrdersCount}
-              </span>
-            )}
-          </button>
-
+      {/* ── Top Announcement Bar (100% customer-focused, no admin link) ── */}
+      <div className="bg-slate-950 text-white py-1 px-3 sm:px-4 text-[10px] sm:text-xs font-semibold tracking-wide border-b border-white/5 w-full text-center">
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 overflow-hidden">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+          <span className="truncate">
+            شحن مجاني فوق {STORE_INFO.freeShippingThreshold || 500} ج.م · طلب فوري عبر الواتساب · منتجات أصلية 100% 🐾
+          </span>
         </div>
       </div>
 
@@ -88,7 +66,7 @@ export default function Navbar() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ابحث عن طعام، رمل..."
+                placeholder="ابحث عن طعام، رمل، مكافآت..."
                 className="w-full pr-8 pl-7 sm:pr-9 sm:pl-9 py-1.5 sm:py-2 bg-white rounded-xl text-xs sm:text-sm font-bold text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/60 shadow-inner truncate"
                 dir="rtl"
               />
@@ -104,7 +82,7 @@ export default function Navbar() {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* WhatsApp — desktop only */}
             <a
               href={`https://wa.me/${STORE_INFO.whatsappNumber}?text=السلام%20عليكم%20أليف%20بيتس`}
@@ -127,7 +105,7 @@ export default function Navbar() {
             >
               <Heart className="w-5 h-5 sm:w-6 sm:h-6" />
               {wishlist.length > 0 && (
-                <span className="absolute 0 top-0.5 -right-0.5 w-4 h-4 bg-white text-red-600 font-black text-[10px] rounded-full flex items-center justify-center leading-none">
+                <span className="absolute top-0.5 -right-0.5 w-4 h-4 bg-white text-red-600 font-black text-[10px] rounded-full flex items-center justify-center leading-none">
                   {wishlist.length}
                 </span>
               )}

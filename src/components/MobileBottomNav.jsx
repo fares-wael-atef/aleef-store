@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
-import { Home, Search, ShoppingBag, Heart, Shield } from 'lucide-react';
+import { Home, Search, ShoppingBag, Heart, MessageCircle } from 'lucide-react';
 
 export default function MobileBottomNav() {
   const { 
@@ -11,7 +11,7 @@ export default function MobileBottomNav() {
     setSearchQuery,
     navigateToView,
     currentView,
-    unreadOrdersCount
+    STORE_INFO
   } = useStore();
 
   const scrollToProducts = (species = 'all') => {
@@ -24,7 +24,7 @@ export default function MobileBottomNav() {
   };
 
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-2 py-1.5 font-sans" dir="rtl">
+    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-2 py-1 font-sans" dir="rtl">
       <div className="flex items-center justify-around text-center">
         
         {/* Home */}
@@ -35,7 +35,7 @@ export default function MobileBottomNav() {
             setSearchQuery('');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          className={`flex flex-col items-center justify-center p-1.5 transition-all min-w-[56px] ${
+          className={`flex flex-col items-center justify-center p-1 transition-all min-w-[56px] ${
             currentView === 'store' ? 'text-red-600 font-black' : 'text-slate-700'
           }`}
         >
@@ -46,7 +46,7 @@ export default function MobileBottomNav() {
         {/* Species / Search */}
         <button
           onClick={() => scrollToProducts('all')}
-          className="flex flex-col items-center justify-center p-1.5 text-slate-700 hover:text-red-600 active:scale-95 transition-all min-w-[56px]"
+          className="flex flex-col items-center justify-center p-1 text-slate-700 hover:text-red-600 active:scale-95 transition-all min-w-[56px]"
         >
           <Search className="w-5 h-5 text-slate-800" />
           <span className="text-[10px] font-bold mt-0.5">المنتجات</span>
@@ -55,12 +55,12 @@ export default function MobileBottomNav() {
         {/* Cart in center */}
         <button
           onClick={() => setIsCartOpen(true)}
-          className="relative flex flex-col items-center justify-center -mt-5 bg-red-600 hover:bg-red-700 text-white w-12 h-12 rounded-full shadow-lg shadow-red-600/40 border-2 border-white active:scale-90 transition-transform"
+          className="relative flex flex-col items-center justify-center -mt-4 bg-red-600 hover:bg-red-700 text-white w-12 h-12 rounded-full shadow-lg shadow-red-600/40 border-2 border-white active:scale-90 transition-transform"
           title="سلة التسوق"
         >
           <ShoppingBag className="w-5 h-5 text-white" />
           {totalItemsCount > 0 && (
-            <span className="absolute top-0 right-0 w-5 h-5 bg-slate-950 text-white font-black text-[10px] rounded-full flex items-center justify-center border border-white">
+            <span className="absolute top-0 right-0 w-4 h-4 bg-slate-950 text-white font-black text-[9px] rounded-full flex items-center justify-center border border-white">
               {totalItemsCount}
             </span>
           )}
@@ -75,32 +75,27 @@ export default function MobileBottomNav() {
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }, 50);
           }}
-          className="relative flex flex-col items-center justify-center p-1.5 text-slate-700 hover:text-red-600 active:scale-95 transition-all min-w-[56px]"
+          className="relative flex flex-col items-center justify-center p-1 text-slate-700 hover:text-red-600 active:scale-95 transition-all min-w-[56px]"
         >
           <Heart className="w-5 h-5 text-slate-800" />
           {wishlist.length > 0 && (
-            <span className="absolute top-1 right-3.5 w-4 h-4 bg-red-600 text-white font-black text-[9px] rounded-full flex items-center justify-center shadow">
+            <span className="absolute top-1 right-3.5 w-3.5 h-3.5 bg-red-600 text-white font-black text-[8px] rounded-full flex items-center justify-center shadow">
               {wishlist.length}
             </span>
           )}
           <span className="text-[10px] font-bold mt-0.5">المفضلة</span>
         </button>
 
-        {/* Admin Link */}
-        <button
-          onClick={() => navigateToView('admin')}
-          className={`relative flex flex-col items-center justify-center p-1.5 transition-all min-w-[56px] ${
-            currentView === 'admin' ? 'text-red-600 font-black' : 'text-slate-700'
-          }`}
+        {/* WhatsApp Contact */}
+        <a
+          href={`https://wa.me/${STORE_INFO.whatsappNumber}?text=${encodeURIComponent('السلام عليكم أليف بيتس')}`}
+          target="_blank"
+          rel="noreferrer"
+          className="flex flex-col items-center justify-center p-1 text-emerald-600 hover:text-emerald-700 active:scale-95 transition-all min-w-[56px]"
         >
-          <Shield className="w-5 h-5" />
-          {unreadOrdersCount > 0 && (
-            <span className="absolute top-1 right-3.5 w-4 h-4 bg-red-600 text-white font-black text-[9px] rounded-full flex items-center justify-center animate-pulse">
-              {unreadOrdersCount}
-            </span>
-          )}
-          <span className="text-[10px] font-bold mt-0.5">الإدارة</span>
-        </button>
+          <MessageCircle className="w-5 h-5" />
+          <span className="text-[10px] font-bold mt-0.5">واتساب</span>
+        </a>
 
       </div>
     </div>

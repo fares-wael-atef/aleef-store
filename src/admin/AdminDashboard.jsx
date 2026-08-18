@@ -89,13 +89,22 @@ export default function AdminDashboard() {
       setLoginError('');
       showToast('Welcome to Aleef Admin!');
     } else {
-      setLoginError('Incorrect password. Default: admin or aleef2024');
+      setLoginError('Incorrect password. Password is: admin');
     }
   };
 
   const handleLogout = () => {
     setAdminAuthenticated(false);
     setIsAuthenticated(false);
+    setLoginPass('');
+    showToast('Logged out successfully');
+  };
+
+  const handleViewStore = () => {
+    setAdminAuthenticated(false);
+    setIsAuthenticated(false);
+    setLoginPass('');
+    navigateToView('store');
   };
 
   // ── Product Handlers ──
@@ -331,7 +340,7 @@ export default function AdminDashboard() {
         {/* Bottom Actions */}
         <div className="p-3 border-t border-slate-100 space-y-1">
           <button
-            onClick={() => navigateToView('store')}
+            onClick={handleViewStore}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors text-left"
           >
             <Store className="w-4 h-4 text-emerald-700" />
