@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
-import { Search, ShoppingBag, Heart, MessageCircle, X } from 'lucide-react';
-import { STORE_INFO, SPECIES_LIST } from '../data/products';
+import { Search, ShoppingBag, Heart, MessageCircle, X, Shield, Package } from 'lucide-react';
+import { SPECIES_LIST } from '../data/products';
 
 export default function Navbar() {
   const {
@@ -11,23 +11,52 @@ export default function Navbar() {
     setIsCartOpen,
     selectedSpecies,
     setSelectedSpecies,
-    totalItemsCount
+    totalItemsCount,
+    STORE_INFO,
+    navigateToView,
+    unreadOrdersCount
   } = useStore();
 
   return (
-    <header className="sticky top-0 z-40 shadow-sm" dir="rtl">
+    <header className="sticky top-0 z-40 shadow-sm font-sans" dir="rtl">
 
-      {/* ── Top announcement bar ── */}
-      <div className="bg-slate-950 text-white text-center py-1.5 text-[11px] sm:text-xs font-semibold tracking-wide hidden sm:block">
-        شحن مجاني عند الطلب فوق 500 ج.م &nbsp;·&nbsp; اطلب الآن عبر واتساب &nbsp;·&nbsp; توصيل لجميع محافظات مصر
+      {/* ── Top Announcement & Admin Quick Bar ── */}
+      <div className="bg-slate-950 text-white py-1 px-4 text-[11px] sm:text-xs font-semibold tracking-wide border-b border-white/5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="truncate">
+              شحن مجاني فوق {STORE_INFO.freeShippingThreshold || 500} ج.م · طلب فوري عبر الواتساب · منتجات أصلية 100%
+            </span>
+          </div>
+
+          {/* Admin Portal Quick Switcher */}
+          <button
+            onClick={() => navigateToView('admin')}
+            className="flex items-center gap-1.5 bg-red-950/70 hover:bg-red-900 border border-red-500/40 text-red-300 hover:text-white px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black transition-all shrink-0"
+          >
+            <Shield className="w-3 h-3 text-red-400" />
+            <span>لوحة الإدارة (Admin)</span>
+            {unreadOrdersCount > 0 && (
+              <span className="w-4 h-4 bg-red-600 text-white font-black rounded-full flex items-center justify-center text-[9px] animate-pulse">
+                {unreadOrdersCount}
+              </span>
+            )}
+          </button>
+
+        </div>
       </div>
 
-      {/* ── Main header ── */}
+      {/* ── Main Red Header ── */}
       <div className="bg-[#DC2626]">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3 sm:gap-5">
 
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2.5 shrink-0 group">
+          <button
+            onClick={() => navigateToView('store')}
+            className="flex items-center gap-2.5 shrink-0 group text-right cursor-pointer"
+          >
             <div className="w-10 h-10 sm:w-11 sm:h-11 shrink-0">
               <svg viewBox="0 0 100 100" className="w-full h-full fill-white transition-transform duration-300 group-hover:scale-105">
                 <path d="M50 42 C38 42 27 50 23 62 C18 76 20 87 31 90 C38 92.5 44.5 89 50 89 C55.5 89 62 92.5 69 90 C80 87 82 76 77 62 C73 50 62 42 50 42Z" />
@@ -46,7 +75,7 @@ export default function Navbar() {
                 أليف بيتس
               </span>
             </div>
-          </a>
+          </button>
 
           {/* Search */}
           <div className="flex-1 max-w-2xl">
@@ -56,7 +85,7 @@ export default function Navbar() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ابحث عن منتج، ماركة، نوع طعام..."
+                placeholder="ابحث عن طعام قطط، كلاب، رمل، ألعاب..."
                 className="w-full pr-9 pl-9 py-2 sm:py-2.5 bg-white rounded-xl text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-inner"
                 dir="rtl"
               />
@@ -112,7 +141,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ── Species tab bar ── */}
+      {/* ── Species Tab Bar ── */}
       <div className="bg-white border-b border-slate-100 overflow-x-auto scrollbar-none shadow-sm">
         <div className="max-w-7xl mx-auto px-4 flex items-center gap-1 py-0 min-w-max">
           {SPECIES_LIST.map((sp) => (

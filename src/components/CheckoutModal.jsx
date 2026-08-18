@@ -30,7 +30,8 @@ export default function CheckoutModal() {
     buildWhatsAppOrderMessage,
     setActiveOrder,
     setIsOrderTrackingOpen,
-    showToast
+    showToast,
+    createOrder
   } = useStore();
 
   const [step, setStep] = useState(1);
@@ -105,10 +106,15 @@ export default function CheckoutModal() {
       totalAmount,
       paymentMethod,
       deliverySlot,
-      status: 'Placed',
+      status: 'pending',
       driverName: 'الكابتن محمد (مندوب أليف بيتس)',
       driverPhone: STORE_INFO.phone1
     };
+
+    // Save to admin database / localStorage & play notification chime
+    if (createOrder) {
+      createOrder(newOrder);
+    }
 
     if (orderMode === 'whatsapp') {
       const whatsappMsg = buildWhatsAppOrderMessage(

@@ -1,6 +1,6 @@
 import React from 'react';
-import { STORE_INFO } from '../data/products';
-import { MessageCircle, Phone, MapPin, Clock, ShieldCheck, Truck, CreditCard } from 'lucide-react';
+import { useStore } from '../context/StoreContext';
+import { MessageCircle, Phone, MapPin, Clock, ShieldCheck, Truck, CreditCard, Shield } from 'lucide-react';
 
 const NAV_LINKS = [
   { label: "طعام القطط الجاف",    species: "cat",  cat: "dry-food"   },
@@ -17,12 +17,14 @@ const PERKS = [
   { icon: Truck,        text: "توصيل سريع لجميع المحافظات"     },
   { icon: MessageCircle,text: "طلب فوري عبر الواتساب"           },
   { icon: CreditCard,   text: "دفع عند الاستلام أو بالكارت"    },
-  { icon: ShieldCheck,  text: "منتجات أصلية 100%"               },
+  { icon: ShieldCheck,  text: "منتجات أصلية 100% مضمونة"        },
 ];
 
 export default function Footer() {
+  const { STORE_INFO, navigateToView, unreadOrdersCount } = useStore();
+
   return (
-    <footer className="bg-slate-950 text-white pt-14 pb-8 border-t border-white/5" dir="rtl">
+    <footer className="bg-slate-950 text-white pt-14 pb-8 border-t border-white/5 font-sans" dir="rtl">
       <div className="max-w-7xl mx-auto px-4 space-y-12">
 
         {/* ── Top perks row ── */}
@@ -100,9 +102,22 @@ export default function Footer() {
             <ul className="space-y-2 text-xs text-slate-400 font-medium">
               <li className="hover:text-white transition-colors cursor-default">سياسة الشحن والتوصيل</li>
               <li className="hover:text-white transition-colors cursor-default">سياسة الاسترجاع والاستبدال</li>
-              <li className="hover:text-white transition-colors cursor-default">ضمان المنتجات الأصلية</li>
+              <li className="hover:text-white transition-colors cursor-default">ضمان المنتجات الأصلية 100%</li>
               <li className="hover:text-white transition-colors cursor-default">أسئلة شائعة</li>
-              <li className="hover:text-white transition-colors cursor-default">تواصل معنا</li>
+              <li>
+                <button
+                  onClick={() => navigateToView('admin')}
+                  className="flex items-center gap-1.5 text-red-400 hover:text-red-300 font-bold transition-colors"
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  <span>دخول لوحة الإدارة (Admin Portal)</span>
+                  {unreadOrdersCount > 0 && (
+                    <span className="w-4 h-4 bg-red-600 text-white font-black rounded-full flex items-center justify-center text-[9px]">
+                      {unreadOrdersCount}
+                    </span>
+                  )}
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -139,7 +154,13 @@ export default function Footer() {
             <span className="w-1 h-1 rounded-full bg-slate-600" />
             <span>فيزا وانستاباي</span>
             <span className="w-1 h-1 rounded-full bg-slate-600" />
-            <span>واتساب: {STORE_INFO.phone1}</span>
+            <button
+              onClick={() => navigateToView('admin')}
+              className="text-slate-400 hover:text-red-400 flex items-center gap-1 transition-colors"
+            >
+              <Shield className="w-3.5 h-3.5" />
+              لوحة الإدارة
+            </button>
           </div>
         </div>
 
