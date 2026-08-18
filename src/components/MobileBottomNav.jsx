@@ -11,7 +11,9 @@ export default function MobileBottomNav() {
     setSearchQuery,
     navigateToView,
     currentView,
-    STORE_INFO
+    STORE_INFO,
+    t,
+    isArabic
   } = useStore();
 
   const scrollToProducts = (species = 'all') => {
@@ -24,7 +26,7 @@ export default function MobileBottomNav() {
   };
 
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-2 py-1 font-sans" dir="rtl">
+    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-2 py-1 font-sans" dir={isArabic ? 'rtl' : 'ltr'}>
       <div className="flex items-center justify-around text-center">
         
         {/* Home */}
@@ -40,7 +42,7 @@ export default function MobileBottomNav() {
           }`}
         >
           <Home className="w-5 h-5" />
-          <span className="text-[10px] font-bold mt-0.5">الرئيسية</span>
+          <span className="text-[10px] font-bold mt-0.5">{t('home')}</span>
         </button>
 
         {/* Species / Search */}
@@ -49,14 +51,14 @@ export default function MobileBottomNav() {
           className="flex flex-col items-center justify-center p-1 text-slate-700 hover:text-red-600 active:scale-95 transition-all min-w-[56px]"
         >
           <Search className="w-5 h-5 text-slate-800" />
-          <span className="text-[10px] font-bold mt-0.5">المنتجات</span>
+          <span className="text-[10px] font-bold mt-0.5">{t('products')}</span>
         </button>
 
         {/* Cart in center */}
         <button
           onClick={() => setIsCartOpen(true)}
           className="relative flex flex-col items-center justify-center -mt-4 bg-red-600 hover:bg-red-700 text-white w-12 h-12 rounded-full shadow-lg shadow-red-600/40 border-2 border-white active:scale-90 transition-transform"
-          title="سلة التسوق"
+          title={t('cart')}
         >
           <ShoppingBag className="w-5 h-5 text-white" />
           {totalItemsCount > 0 && (
@@ -83,18 +85,18 @@ export default function MobileBottomNav() {
               {wishlist.length}
             </span>
           )}
-          <span className="text-[10px] font-bold mt-0.5">المفضلة</span>
+          <span className="text-[10px] font-bold mt-0.5">{t('wishlist')}</span>
         </button>
 
         {/* WhatsApp Contact */}
         <a
-          href={`https://wa.me/${STORE_INFO.whatsappNumber}?text=${encodeURIComponent('السلام عليكم أليف بيتس')}`}
+          href={`https://wa.me/${STORE_INFO.whatsappNumber}?text=${encodeURIComponent(isArabic ? 'السلام عليكم أليف بيتس' : 'Hello Aleef Pets')}`}
           target="_blank"
           rel="noreferrer"
           className="flex flex-col items-center justify-center p-1 text-emerald-600 hover:text-emerald-700 active:scale-95 transition-all min-w-[56px]"
         >
           <MessageCircle className="w-5 h-5" />
-          <span className="text-[10px] font-bold mt-0.5">واتساب</span>
+          <span className="text-[10px] font-bold mt-0.5">{t('whatsapp')}</span>
         </a>
 
       </div>

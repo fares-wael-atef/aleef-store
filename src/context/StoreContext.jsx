@@ -7,10 +7,52 @@ import {
   SAMPLE_ORDERS, 
   playOrderNotificationSound 
 } from '../admin/adminUtils';
+import { translations } from '../data/translations';
 
 const StoreContext = createContext();
 
 export function StoreProvider({ children }) {
+  // ── 0. Language State (Arabic / English) ────────────────────────
+  const [language, setLanguageState] = useState(() => {
+    try {
+      return localStorage.getItem('aleef_language') || 'ar';
+    } catch {
+      return 'ar';
+    }
+  });
+
+  const setLanguage = (lang) => {
+    setLanguageState(lang);
+    try {
+      localStorage.setItem('aleef_language', lang);
+    } catch {}
+    if (typeof document !== 'undefined') {
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = lang;
+    }
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'ar' ? 'en' : 'ar');
+  };
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = language;
+    }
+  }, [language]);
+
+  const t = useCallback((key) => {
+    if (translations[language] && translations[language][key] !== undefined) {
+      return translations[language][key];
+    }
+    if (translations.ar && translations.ar[key] !== undefined) {
+      return translations.ar[key];
+    }
+    return key;
+  }, [language]);
+
   // ── 1. Products State (Custom/Admin + Default) ──────────────────
   const [products, setProducts] = useState(() => {
     try {
@@ -205,7 +247,7 @@ export function StoreProvider({ children }) {
       originalPrice: productData.originalPrice ? parseFloat(productData.originalPrice) : null,
     };
     setProducts((prev) => [newProduct, ...prev]);
-    showToast(`تمت إضافة المنتج "${newProduct.arabicName || newProduct.name}" بنجاح! 🎉`);
+    showToast(language === 'ar' ? `تمت إضافة "${newProduct.arabicName || newProduct.name}" بنجاح!` : `Added "${newProduct.name}" successfully!`);
     return newProduct;
   };
 
@@ -222,12 +264,12 @@ export function StoreProvider({ children }) {
           : p
       )
     );
-    showToast('تم تحديث بيانات المنتج بنجاح! ✅');
+    showToast(language === 'ar' ? 'تم تحديث بيانات المنتج بنجاح!' : 'Product updated successfully!');
   };
 
   const deleteProduct = (productId) => {
     setProducts((prev) => prev.filter((p) => p.id !== productId));
-    showToast('تم حذف المنتج بنجاح! 🗑️', 'info');
+    showToast(language === 'ar' ? 'تم حذف المنتج بنجاح!' : 'Product deleted successfully!', 'info');
   };
 
   const toggleProductStock = (productId) => {
@@ -235,7 +277,8 @@ export function StoreProvider({ children }) {
       prev.map((p) => {
         if (p.id === productId) {
           const nextStock = !p.inStock;
-          showToast(`تم تعديل حالة المنتج إلى: ${nextStock ? 'متوفر ✅' : 'نفذت الكمية ⚠️'}`);
+          const statusText = nextStock ? (language === 'ar' ? 'متوفر' : 'In Stock') : (language === 'ar' ? 'نفذت الكمية' : 'Out of Stock');
+          showToast(`${language === 'ar' ? 'تم تعديل الحالة إلى: ' : 'Status changed to: '} ${statusText}`);
           return { ...p, inStock: nextStock };
         }
         return p;
@@ -246,7 +289,7 @@ export function StoreProvider({ children }) {
   const resetProductsToDefault = () => {
     setProducts(DEFAULT_PRODUCTS);
     localStorage.removeItem(PRODUCTS_KEY);
-    showToast('تمت استعادة قائمة المنتجات الأصلية بنجاح! 🔄');
+    showToast(language === 'ar' ? 'تمت استعادة المنتجات الأصلية!' : 'Restored original products!');
   };
 
   // ── Order Management Methods ────────────────────────────────────
@@ -256,17 +299,14 @@ export function StoreProvider({ children }) {
       ...orderData,
       orderId,
       timestamp: Date.now(),
-      date: new Date().toLocaleDateString('ar-EG'),
+      date: new Date().toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US'),
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       status: 'pending',
       isNew: true,
     };
 
     setOrders((prev) => [newOrder, ...prev]);
-
-    // Play chime sound for order notification
     playOrderNotificationSound();
-
     return newOrder;
   };
 
@@ -274,12 +314,12 @@ export function StoreProvider({ children }) {
     setOrders((prev) =>
       prev.map((o) => (o.orderId === orderId ? { ...o, status: newStatus, isNew: false } : o))
     );
-    showToast(`تم تغيير حالة الطلب ${orderId} إلى: ${newStatus} ✅`);
+    showToast(language === 'ar' ? `تم تغيير حالة الطلب ${orderId} إلى: ${newStatus}` : `Order ${orderId} status updated to: ${newStatus}`);
   };
 
   const deleteOrder = (orderId) => {
     setOrders((prev) => prev.filter((o) => o.orderId !== orderId));
-    showToast(`تم حذف الطلب ${orderId} بنجاح! 🗑️`, 'info');
+    showToast(language === 'ar' ? `تم حذف الطلب ${orderId}` : `Order ${orderId} deleted`, 'info');
   };
 
   const markAllOrdersSeen = () => {
@@ -291,7 +331,7 @@ export function StoreProvider({ children }) {
   // ── Cart Operations ─────────────────────────────────────────────
   const addToCart = (product, qty = 1) => {
     if (product.inStock === false) {
-      showToast('عذراً، هذا المنتج غير متوفر حالياً بالمخزن', 'error');
+      showToast(language === 'ar' ? 'عذراً، هذا المنتج غير متوفر حالياً بالمخزن' : 'Sorry, this product is currently out of stock', 'error');
       return;
     }
     setCart((prev) => {
@@ -305,7 +345,8 @@ export function StoreProvider({ children }) {
       }
       return [...prev, { product, quantity: qty }];
     });
-    showToast(`تمت إضافة "${product.arabicName || product.name}" إلى السلة 🛍️`);
+    const pName = language === 'ar' ? (product.arabicName || product.name) : product.name;
+    showToast(language === 'ar' ? `تمت إضافة "${pName}" للسلة 🛍️` : `Added "${pName}" to cart! 🛍️`);
   };
 
   const updateCartQty = (productId, delta) => {
@@ -324,7 +365,7 @@ export function StoreProvider({ children }) {
 
   const removeFromCart = (productId) => {
     setCart((prev) => prev.filter((item) => item.product.id !== productId));
-    showToast('تم حذف المنتج من السلة');
+    showToast(language === 'ar' ? 'تم حذف المنتج من السلة' : 'Item removed from cart');
   };
 
   const clearCart = () => {
@@ -336,10 +377,10 @@ export function StoreProvider({ children }) {
     setWishlist((prev) => {
       const exists = prev.includes(productId);
       if (exists) {
-        showToast('تم الحذف من المفضلة');
+        showToast(language === 'ar' ? 'تم الحذف من المفضلة' : 'Removed from wishlist');
         return prev.filter((id) => id !== productId);
       } else {
-        showToast('تمت الإضافة للمفضلة ❤️');
+        showToast(language === 'ar' ? 'تمت الإضافة للمفضلة ❤️' : 'Added to wishlist ❤️');
         return [...prev, productId];
       }
     });
@@ -350,10 +391,10 @@ export function StoreProvider({ children }) {
     const cleanCode = code.trim().toUpperCase();
     if (storeInfo.coupons && storeInfo.coupons[cleanCode]) {
       setAppliedCoupon(cleanCode);
-      showToast(`تم تفعيل كود الخصم "${cleanCode}" بنجاح! 🎉`);
+      showToast(language === 'ar' ? `تم تفعيل كود الخصم "${cleanCode}" بنجاح!` : `Coupon "${cleanCode}" applied! 🎉`);
       return true;
     } else {
-      showToast('كود الخصم غير صالح أو منتهي الصلاحية', 'error');
+      showToast(language === 'ar' ? 'كود الخصم غير صالح' : 'Invalid coupon code', 'error');
       return false;
     }
   };
@@ -361,7 +402,7 @@ export function StoreProvider({ children }) {
   const removeCoupon = () => {
     setAppliedCoupon(null);
     setCouponCode('');
-    showToast('تم إزالة كود الخصم');
+    showToast(language === 'ar' ? 'تم إزالة كود الخصم' : 'Coupon removed');
   };
 
   // ── Totals Calculation ──────────────────────────────────────────
@@ -387,7 +428,7 @@ export function StoreProvider({ children }) {
   // ── Location Helpers ────────────────────────────────────────────
   const detectUserLocation = () => {
     if (!navigator.geolocation) {
-      showToast('المتصفح لا يدعم تحديد الموقع الجغرافي GPS', 'error');
+      showToast(language === 'ar' ? 'المتصفح لا يدعم تحديد الموقع' : 'Geolocation is not supported', 'error');
       return;
     }
 
@@ -397,16 +438,15 @@ export function StoreProvider({ children }) {
         setUserLocation({
           lat: latitude,
           lng: longitude,
-          addressText: `إحداثيات موقعك (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
-          city: 'القاهرة',
-          district: 'موقعي الحالي',
+          addressText: `GPS (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
+          city: 'Cairo',
+          district: 'Current Location',
           isDetected: true
         });
-        showToast('تم تحديد موقعك بدقة GPS بنجاح! 📍');
+        showToast(language === 'ar' ? 'تم تحديد موقعك بدقة GPS بنجاح!' : 'Location detected via GPS! 📍');
       },
       (err) => {
-        console.warn('Geolocation error:', err);
-        showToast('تعذر الوصول للموقع بدقة، يرجى كتابة العنوان يدوياً', 'info');
+        showToast(language === 'ar' ? 'تعذر الوصول للموقع، يرجى كتابة العنوان يدوياً' : 'Could not detect location. Please enter address manually', 'info');
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
@@ -414,32 +454,40 @@ export function StoreProvider({ children }) {
 
   // ── WhatsApp Message Builder ────────────────────────────────────
   const buildWhatsAppOrderMessage = (customerInfo, orderCart, finalTotal, loc) => {
-    let msg = `*🐾 طلب شراء جديد من متجر أليف بيتس (Aleef Pets) 🐾*\n`;
+    let msg = `*🐾 New Order - Aleef Pets | أليف بيتس 🐾*\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += `👤 *العميل:* ${customerInfo.name || 'عميل المتجر'}\n`;
-    msg += `📱 *رقم الهاتف:* ${customerInfo.phone || 'غير مسجل'}\n`;
-    msg += `📍 *العنوان:* ${customerInfo.address || 'القاهرة'}\n`;
+    msg += `👤 *Customer:* ${customerInfo.name || 'Customer'}\n`;
+    msg += `📱 *Phone:* ${customerInfo.phone || 'N/A'}\n`;
+    msg += `📍 *Address:* ${customerInfo.address || 'Egypt'}\n`;
     if (loc && loc.lat && loc.lng) {
-      msg += `🗺️ *الموقع GPS على الخريطة:* https://maps.google.com/?q=${loc.lat},${loc.lng}\n`;
+      msg += `🗺️ *GPS Location:* https://maps.google.com/?q=${loc.lat},${loc.lng}\n`;
     }
     msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += `📦 *المنتجات المطلوبة:*\n`;
+    msg += `📦 *Order Items:*\n`;
 
     orderCart.forEach((item, idx) => {
-      msg += `${idx + 1}. *${item.product.arabicName || item.product.name}*\n`;
-      msg += `   • الكمية: ${item.quantity} | السعر: ${(item.product.price * item.quantity).toFixed(0)} ج.م\n`;
+      const pName = language === 'ar' ? (item.product.arabicName || item.product.name) : item.product.name;
+      msg += `${idx + 1}. *${pName}*\n`;
+      msg += `   • Qty: ${item.quantity} | Price: ${(item.product.price * item.quantity).toFixed(0)} EGP\n`;
     });
 
     msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += `💵 *الإجمالي النهائي:* ${finalTotal.toFixed(0)} ج.م\n`;
-    msg += `🚚 *حالة التوصيل:* ${isFreeShipping ? 'شحن مجاني' : 'مصاريف شحن 35 ج.م'}\n`;
+    msg += `💵 *Total Amount:* ${finalTotal.toFixed(0)} EGP\n`;
+    msg += `🚚 *Delivery:* ${isFreeShipping ? 'Free Shipping' : '35 EGP'}\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += `برجاء تأكيد استلام الطلب وتحديد موعد وصول المندوب. شكراً لتسوقكم مع أليف بيتس! 🐾`;
+    msg += `Please confirm order receipt. Thank you for shopping with Aleef Pets! 🐾`;
 
     return encodeURIComponent(msg);
   };
 
   const value = {
+    // Language
+    language,
+    setLanguage,
+    toggleLanguage,
+    t,
+    isArabic: language === 'ar',
+
     // Products
     PRODUCTS: products,
     products,

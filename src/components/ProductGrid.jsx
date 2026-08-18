@@ -4,14 +4,6 @@ import ProductCard from './ProductCard';
 import { CATEGORIES } from '../data/products';
 import { SlidersHorizontal, RotateCcw, ChevronDown, Flame, Tag } from 'lucide-react';
 
-const SORT_OPTIONS = [
-  { value: 'featured',   label: 'الأكثر مبيعاً'          },
-  { value: 'price-asc',  label: 'السعر: من الأقل'         },
-  { value: 'price-desc', label: 'السعر: من الأعلى'        },
-  { value: 'rating',     label: 'الأعلى تقييماً'           },
-  { value: 'discount',   label: 'الأعلى خصماً'            },
-];
-
 export default function ProductGrid() {
   const {
     PRODUCTS,
@@ -23,7 +15,17 @@ export default function ProductGrid() {
     setSelectedCategory,
     sortBy,
     setSortBy,
+    t,
+    isArabic
   } = useStore();
+
+  const SORT_OPTIONS = [
+    { value: 'featured',   label: t('sortFeatured')   },
+    { value: 'price-asc',  label: t('sortPriceAsc')   },
+    { value: 'price-desc', label: t('sortPriceDesc')  },
+    { value: 'rating',     label: t('sortRating')     },
+    { value: 'discount',   label: t('sortDiscount')   },
+  ];
 
   // Filter
   let filtered = PRODUCTS.filter((p) => {
@@ -67,7 +69,7 @@ export default function ProductGrid() {
   const showHighlights = !hasActiveFilters && sortBy === 'featured' && bestSellers.length > 0;
 
   return (
-    <section id="products-section" className="w-full max-w-full overflow-hidden" dir="rtl">
+    <section id="products-section" className="w-full max-w-full overflow-hidden" dir={isArabic ? 'rtl' : 'ltr'}>
 
       {/* ── Best Sellers spotlight ── */}
       {showHighlights && (
@@ -77,15 +79,15 @@ export default function ProductGrid() {
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <Flame className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
-                  <h2 className="text-lg sm:text-2xl font-black text-slate-900">الأكثر مبيعاً</h2>
+                  <h2 className="text-lg sm:text-2xl font-black text-slate-900">{t('bestSellers')}</h2>
                 </div>
-                <p className="text-[11px] sm:text-xs text-slate-500 font-medium">المنتجات الأعلى طلباً من عملائنا</p>
+                <p className="text-[11px] sm:text-xs text-slate-500 font-medium">{t('bestSellersSub')}</p>
               </div>
               <button
                 onClick={() => document.getElementById('all-products')?.scrollIntoView({ behavior: 'smooth' })}
                 className="text-[11px] sm:text-xs font-black text-red-600 hover:text-red-800 transition-colors"
               >
-                عرض الكل
+                {t('viewAll')}
               </button>
             </div>
 
@@ -108,7 +110,7 @@ export default function ProductGrid() {
               <div className="flex items-center gap-1.5 mb-1">
                 <Tag className="w-4 h-4 text-red-600" />
                 <h2 className="text-lg sm:text-2xl font-black text-slate-900">
-                  {hasActiveFilters ? 'نتائج البحث' : 'جميع المنتجات'}
+                  {hasActiveFilters ? t('searchResults') : t('allProducts')}
                 </h2>
               </div>
               <div className="w-10 sm:w-12 h-0.5 bg-red-600 rounded-full" />
@@ -119,7 +121,7 @@ export default function ProductGrid() {
                 className="flex items-center gap-1 text-[11px] sm:text-xs font-black text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg transition-all"
               >
                 <RotateCcw className="w-3 h-3" />
-                إعادة ضبط
+                {t('resetFilters')}
               </button>
             )}
           </div>
@@ -127,19 +129,22 @@ export default function ProductGrid() {
           {/* Category filter pills */}
           <div className="w-full overflow-x-auto scrollbar-none py-1">
             <div className="flex gap-1.5 sm:gap-2 min-w-max">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all border ${
-                    selectedCategory === cat.id
-                      ? 'bg-red-600 text-white border-red-600 shadow-sm shadow-red-200'
-                      : 'bg-white text-slate-600 border-slate-200 hover:border-red-200 hover:text-red-600 hover:bg-red-50'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
+              {CATEGORIES.map((cat) => {
+                const label = isArabic ? cat.label : (cat.en || cat.label);
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all border ${
+                      selectedCategory === cat.id
+                        ? 'bg-red-600 text-white border-red-600 shadow-sm shadow-red-200'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-red-200 hover:text-red-600 hover:bg-red-50'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -148,7 +153,7 @@ export default function ProductGrid() {
             <div className="flex items-center gap-1.5 text-slate-500 font-medium">
               <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
               <span>
-                <strong className="text-slate-900 font-black">{sorted.length}</strong> منتج
+                <strong className="text-slate-900 font-black">{sorted.length}</strong> {t('itemsCount')}
               </span>
             </div>
 
@@ -156,13 +161,13 @@ export default function ProductGrid() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="appearance-none bg-white border border-slate-200 rounded-xl pr-3 pl-7 py-1.5 text-[11px] sm:text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400 cursor-pointer shadow-xs"
+                className={`appearance-none bg-white border border-slate-200 rounded-xl ${isArabic ? 'pr-3 pl-7' : 'pl-3 pr-7'} py-1.5 text-[11px] sm:text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400 cursor-pointer shadow-xs`}
               >
                 {SORT_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>{o.label}</option>
                 ))}
               </select>
-              <ChevronDown className="absolute left-2 top-2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+              <ChevronDown className={`absolute ${isArabic ? 'left-2' : 'right-2'} top-2 w-3.5 h-3.5 text-slate-400 pointer-events-none`} />
             </div>
           </div>
 
@@ -181,14 +186,14 @@ export default function ProductGrid() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-sm sm:text-base font-black text-slate-800">لا توجد منتجات مطابقة</h3>
-                <p className="text-xs text-slate-400 mt-0.5 font-medium">جرب تعديل البحث أو إعادة ضبط الفلاتر</p>
+                <h3 className="text-sm sm:text-base font-black text-slate-800">{t('noProductsFound')}</h3>
+                <p className="text-xs text-slate-400 mt-0.5 font-medium">{t('noProductsSub')}</p>
               </div>
               <button
                 onClick={resetFilters}
                 className="bg-red-600 hover:bg-red-700 text-white font-black px-5 py-2 rounded-xl text-xs sm:text-sm transition-all shadow-sm"
               >
-                إظهار جميع المنتجات
+                {t('showAllProducts')}
               </button>
             </div>
           )}

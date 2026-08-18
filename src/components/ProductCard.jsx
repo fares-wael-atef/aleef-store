@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { Star, Heart, ShoppingBag, MessageCircle, Check, Ban } from 'lucide-react';
-import { STORE_INFO } from '../data/products';
 
 export default function ProductCard({ product, compact = false }) {
   const {
@@ -9,7 +8,10 @@ export default function ProductCard({ product, compact = false }) {
     wishlist,
     addToCart,
     toggleWishlist,
-    setSelectedProductDetail
+    setSelectedProductDetail,
+    STORE_INFO,
+    t,
+    isArabic
   } = useStore();
 
   const [imgError, setImgError] = useState(false);
@@ -18,16 +20,22 @@ export default function ProductCard({ product, compact = false }) {
   const cartItem = cart.find((i) => i.product.id === product.id);
   const isInStock = product.inStock !== false;
 
+  const displayName = isArabic ? (product.arabicName || product.name) : product.name;
+
   const discountPct = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
   const waLink = isInStock
     ? `https://wa.me/${STORE_INFO.whatsappNumber}?text=${encodeURIComponent(
-        `مرحباً أليف بيتس، أريد طلب: ${product.arabicName || product.name} — ${product.price} ج.م`
+        isArabic
+          ? `مرحباً أليف بيتس، أريد طلب: ${displayName} — ${product.price} ج.م`
+          : `Hello Aleef Pets, I would like to order: ${displayName} — ${product.price} EGP`
       )}`
     : `https://wa.me/${STORE_INFO.whatsappNumber}?text=${encodeURIComponent(
-        `مرحباً أليف بيتس، متى سيتوفر منتج: ${product.arabicName || product.name}؟`
+        isArabic
+          ? `مرحباً أليف بيتس، متى سيتوفر منتج: ${displayName}؟`
+          : `Hello Aleef Pets, when will this item restock: ${displayName}?`
       )}`;
 
   return (
@@ -38,13 +46,13 @@ export default function ProductCard({ product, compact = false }) {
         className="relative overflow-hidden bg-slate-50 cursor-pointer shrink-0"
         style={{ aspectRatio: compact ? '1/1' : '4/3' }}
         onClick={() => setSelectedProductDetail(product)}
-        aria-label={`عرض تفاصيل ${product.arabicName || product.name}`}
+        aria-label={`View details of ${displayName}`}
       >
         <img
           src={imgError
             ? 'https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=600&q=80'
             : product.image}
-          alt={product.arabicName || product.name}
+          alt={displayName}
           onError={() => setImgError(true)}
           className={`product-img w-full h-full object-cover ${!isInStock ? 'grayscale opacity-75' : ''}`}
           loading="lazy"
@@ -55,28 +63,28 @@ export default function ProductCard({ product, compact = false }) {
 
         {/* Out of stock badge */}
         {!isInStock && (
-          <div className="absolute top-2.5 left-2.5 bg-slate-900 text-white text-[10px] font-black px-2.5 py-1 rounded-lg shadow-md leading-none flex items-center gap-1 z-10">
+          <div className={`absolute top-2.5 ${isArabic ? 'left-2.5' : 'left-2.5'} bg-slate-900 text-white text-[10px] font-black px-2.5 py-1 rounded-lg shadow-md leading-none flex items-center gap-1 z-10`}>
             <Ban className="w-3 h-3 text-red-400" />
-            <span>نفذت الكمية</span>
+            <span>{t('outOfStock')}</span>
           </div>
         )}
 
         {/* Discount badge */}
         {isInStock && discountPct > 0 && (
-          <div className="absolute top-2.5 left-2.5 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-lg shadow leading-none">
+          <div className={`absolute top-2.5 ${isArabic ? 'left-2.5' : 'left-2.5'} bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-lg shadow leading-none`}>
             -{discountPct}%
           </div>
         )}
         {isInStock && !discountPct && product.isBestSeller && (
-          <div className="absolute top-2.5 left-2.5 badge-bestseller text-white text-[10px] font-black px-2 py-0.5 rounded-lg shadow leading-none">
-            الأكثر مبيعاً
+          <div className={`absolute top-2.5 ${isArabic ? 'left-2.5' : 'left-2.5'} badge-bestseller text-white text-[10px] font-black px-2 py-0.5 rounded-lg shadow leading-none`}>
+            {t('bestSellers')}
           </div>
         )}
 
         {/* Wishlist */}
         <button
           onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}
-          className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center shadow transition-all ${
+          className={`absolute top-2 ${isArabic ? 'right-2' : 'right-2'} w-7 h-7 rounded-full flex items-center justify-center shadow transition-all ${
             isWishlisted
               ? 'bg-red-600 text-white scale-110'
               : 'bg-white/90 text-slate-400 hover:text-red-500 hover:scale-110'
@@ -87,7 +95,7 @@ export default function ProductCard({ product, compact = false }) {
       </div>
 
       {/* ── Info ── */}
-      <div className="p-3 sm:p-3.5 flex flex-col flex-1 gap-1.5 text-right" dir="rtl">
+      <div className={`p-3 sm:p-3.5 flex flex-col flex-1 gap-1.5 ${isArabic ? 'text-right' : 'text-left'}`} dir={isArabic ? 'rtl' : 'ltr'}>
 
         {/* Brand */}
         <span className="text-[10px] font-black text-red-600 uppercase tracking-wider leading-none">
@@ -99,7 +107,7 @@ export default function ProductCard({ product, compact = false }) {
           onClick={() => setSelectedProductDetail(product)}
           className="text-[12px] sm:text-[13px] font-bold text-slate-900 leading-snug line-clamp-2 cursor-pointer hover:text-red-600 transition-colors"
         >
-          {product.arabicName || product.name}
+          {displayName}
         </h3>
 
         {/* Weight + Rating */}
@@ -109,18 +117,18 @@ export default function ProductCard({ product, compact = false }) {
             <span className="text-[11px] font-bold text-slate-800">{product.rating || 5.0}</span>
             <span className="text-[10px] text-slate-400">({product.reviewsCount || 1})</span>
           </div>
-          <span className="text-[10px] text-slate-400 font-medium truncate max-w-[60px]">{product.weight}</span>
+          <span className="text-[10px] text-slate-400 font-medium truncate max-w-[70px]">{product.weight}</span>
         </div>
 
         {/* Price row */}
         <div className="flex items-center gap-2 mt-1 flex-wrap">
           <span className="text-base sm:text-lg font-black text-slate-900">
             {product.price.toFixed(0)}
-            <span className="text-[11px] font-bold text-slate-500 mr-0.5">{STORE_INFO.currencySymbol}</span>
+            <span className="text-[11px] font-bold text-slate-500 mx-0.5">{t('currency')}</span>
           </span>
           {product.originalPrice && (
             <span className="text-[11px] text-slate-400 line-through font-medium">
-              {product.originalPrice.toFixed(0)} {STORE_INFO.currencySymbol}
+              {product.originalPrice.toFixed(0)} {t('currency')}
             </span>
           )}
         </div>
@@ -139,12 +147,12 @@ export default function ProductCard({ product, compact = false }) {
               {cartItem ? (
                 <>
                   <Check className="w-3.5 h-3.5 shrink-0" />
-                  <span>في السلة ({cartItem.quantity})</span>
+                  <span>{t('inCart')} ({cartItem.quantity})</span>
                 </>
               ) : (
                 <>
                   <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
-                  <span>أضف للسلة</span>
+                  <span>{t('addToCart')}</span>
                 </>
               )}
             </button>
@@ -154,7 +162,7 @@ export default function ProductCard({ product, compact = false }) {
               className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-xs bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed"
             >
               <Ban className="w-3.5 h-3.5" />
-              <span>نفذت الكمية</span>
+              <span>{t('outOfStock')}</span>
             </button>
           )}
 
@@ -162,7 +170,7 @@ export default function ProductCard({ product, compact = false }) {
             href={waLink}
             target="_blank"
             rel="noreferrer"
-            title={isInStock ? 'اطلب عبر الواتساب' : 'استفسر عن موعد التوفر'}
+            title={isInStock ? t('orderWhatsApp') : t('askRestock')}
             className={`flex items-center justify-center w-10 h-10 rounded-xl shrink-0 transition-all shadow-sm ${
               isInStock
                 ? 'bg-[#25D366] hover:bg-[#22c35e] active:scale-95 text-white'

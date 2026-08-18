@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
-import { X, Star, ShoppingBag, MessageCircle, Heart, Check } from 'lucide-react';
-import { STORE_INFO } from '../data/products';
+import { X, Star, ShoppingBag, MessageCircle, Heart, Check, Ban } from 'lucide-react';
 
 export default function ProductDetailModal() {
-  const { selectedProductDetail, setSelectedProductDetail, addToCart, toggleWishlist, wishlist } = useStore();
+  const { 
+    selectedProductDetail, 
+    setSelectedProductDetail, 
+    addToCart, 
+    toggleWishlist, 
+    wishlist, 
+    STORE_INFO,
+    t,
+    isArabic
+  } = useStore();
 
   const [qty, setQty] = useState(1);
 
@@ -12,37 +20,42 @@ export default function ProductDetailModal() {
 
   const product = selectedProductDetail;
   const isWishlisted = wishlist.includes(product.id);
+  const isInStock = product.inStock !== false;
+  const displayName = isArabic ? (product.arabicName || product.name) : product.name;
 
   const whatsappInquiryLink = `https://wa.me/${STORE_INFO.whatsappNumber}?text=${encodeURIComponent(
-    `السلام عليكم أليف بيتس! 👋 لدي استفسار عن منتج: ${product.arabicName || product.name} بسعر ${product.price} ج.م`
+    isArabic
+      ? `السلام عليكم أليف بيتس! 👋 لدي استفسار عن منتج: ${displayName} بسعر ${product.price} ج.م`
+      : `Hello Aleef Pets! I have an inquiry about: ${displayName} (${product.price} EGP)`
   )}`;
 
   const handleAddToCart = () => {
+    if (!isInStock) return;
     addToCart(product, qty);
     setSelectedProductDetail(null);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md animate-fade-in" dir="rtl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-md animate-fade-in" dir={isArabic ? 'rtl' : 'ltr'}>
       <div className="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl border border-red-100 relative max-h-[90vh] flex flex-col">
         
         {/* Close Button */}
         <button
           onClick={() => setSelectedProductDetail(null)}
-          className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-white/90 shadow-md hover:bg-red-50 flex items-center justify-center font-bold text-slate-800 transition-colors"
+          className={`absolute top-4 ${isArabic ? 'left-4' : 'right-4'} z-20 w-8 h-8 rounded-full bg-white/90 shadow-md hover:bg-red-50 flex items-center justify-center font-bold text-slate-800 transition-colors`}
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
-        <div className="overflow-y-auto p-6 space-y-6">
+        <div className="overflow-y-auto p-4 sm:p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             
             {/* Image Column */}
             <div className="md:col-span-5 relative">
-              <div className="rounded-2xl overflow-hidden border border-red-100 bg-red-50/30 h-64 p-2 flex items-center justify-center">
+              <div className="rounded-2xl overflow-hidden border border-red-100 bg-red-50/30 h-60 p-2 flex items-center justify-center">
                 <img
                   src={product.image}
-                  alt={product.arabicName || product.name}
+                  alt={displayName}
                   className="w-full h-full object-cover rounded-xl"
                 />
               </div>
@@ -50,121 +63,118 @@ export default function ProductDetailModal() {
               {/* Wishlist Button */}
               <button
                 onClick={() => toggleWishlist(product.id)}
-                className={`mt-3 w-full py-2.5 rounded-xl border text-xs font-black flex items-center justify-center space-x-2 rtl:space-x-reverse transition-all ${
+                className={`mt-3 w-full py-2.5 rounded-xl border text-xs font-black flex items-center justify-center gap-2 transition-all ${
                   isWishlisted
                     ? 'bg-red-600 border-red-600 text-white'
                     : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-red-50'
                 }`}
               >
                 <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-white' : ''}`} />
-                <span>{isWishlisted ? 'محفوظ في المفضلة' : 'إضافة للمفضلة'}</span>
+                <span>{isWishlisted ? (isArabic ? 'محفوظ بالمفضلة' : 'In Wishlist') : (isArabic ? 'إضافة للمفضلة' : 'Add to Wishlist')}</span>
               </button>
             </div>
 
             {/* Info Column */}
-            <div className="md:col-span-7 space-y-4 text-right">
+            <div className={`md:col-span-7 flex flex-col justify-between space-y-4 ${isArabic ? 'text-right' : 'text-left'}`}>
               <div>
-                <span className="text-xs font-black text-red-600 uppercase tracking-wide">
-                  {product.brand}
-                </span>
-                <h2 className="text-lg sm:text-xl font-black text-slate-950 leading-snug mt-0.5">
-                  {product.arabicName || product.name}
-                </h2>
-                <p className="text-xs text-slate-400 font-bold mt-0.5">
-                  {product.name}
-                </p>
-              </div>
-
-              {/* Rating & Stock */}
-              <div className="flex items-center space-x-3 rtl:space-x-reverse text-xs">
-                <div className="flex items-center space-x-1 rtl:space-x-reverse bg-amber-100 text-amber-900 font-black px-2.5 py-1 rounded-md">
-                  <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                  <span>{product.rating}</span>
-                </div>
-                <span className="text-slate-300">|</span>
-                <span className="font-bold text-slate-600">{product.reviewsCount} تقييم</span>
-                <span className="text-slate-300">|</span>
-                <span className="text-emerald-600 font-black flex items-center space-x-1 rtl:space-x-reverse">
-                  <Check className="w-3.5 h-3.5" />
-                  <span>متوفر بالمخزن ({product.stockQty} قطعة)</span>
-                </span>
-              </div>
-
-              {/* Price */}
-              <div className="flex items-baseline space-x-2 rtl:space-x-reverse">
-                <span className="text-2xl font-black text-red-600">
-                  {product.price.toFixed(2)} {STORE_INFO.currencySymbol}
-                </span>
-                {product.originalPrice && (
-                  <span className="text-sm text-slate-400 line-through">
-                    {product.originalPrice.toFixed(2)} {STORE_INFO.currencySymbol}
+                <div className="flex items-center gap-2">
+                  <span className="bg-red-100 text-red-700 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">
+                    {product.brand}
                   </span>
-                )}
-                <span className="bg-red-100 text-red-900 text-xs font-black px-2.5 py-1 rounded-md">
-                  حجم العبوة: {product.weight}
-                </span>
-              </div>
+                  {isInStock ? (
+                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full">
+                      {t('inStock')}
+                    </span>
+                  ) : (
+                    <span className="bg-slate-900 text-white text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <Ban className="w-3 h-3 text-red-400" />
+                      <span>{t('outOfStock')}</span>
+                    </span>
+                  )}
+                </div>
 
-              {/* Description */}
-              <p className="text-xs text-slate-600 font-bold leading-relaxed">
-                {product.description}
-              </p>
+                <h2 className="text-base sm:text-lg font-black text-slate-900 mt-2 leading-tight">
+                  {displayName}
+                </h2>
 
-              {/* Dietary Tags */}
-              {product.dietary && product.dietary.length > 0 && (
-                <div className="space-y-1">
-                  <span className="text-[11px] font-black text-slate-400 uppercase">مميزات المنتج</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {product.dietary.map((tag, idx) => (
-                      <span key={idx} className="bg-red-50 text-red-900 border border-red-200 text-xs font-black px-2.5 py-1 rounded-lg">
-                        ✓ {tag}
-                      </span>
-                    ))}
+                <div className="flex items-center gap-3 mt-2 text-xs text-slate-500">
+                  <div className="flex items-center gap-1 text-amber-500 font-bold">
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    <span>{product.rating || 5.0}</span>
                   </div>
-                </div>
-              )}
-
-              {/* Quantity Stepper & Add Button */}
-              <div className="pt-2 flex items-center space-x-3 rtl:space-x-reverse">
-                <div className="flex items-center border border-red-200 rounded-xl bg-red-50/40">
-                  <button
-                    onClick={() => setQty(Math.max(1, qty - 1))}
-                    className="w-9 h-9 font-black text-slate-700 hover:bg-red-100 rounded-r-xl flex items-center justify-center"
-                  >
-                    -
-                  </button>
-                  <span className="w-10 text-center font-black text-sm text-slate-950">{qty}</span>
-                  <button
-                    onClick={() => setQty(qty + 1)}
-                    className="w-9 h-9 font-black text-slate-700 hover:bg-red-100 rounded-l-xl flex items-center justify-center"
-                  >
-                    +
-                  </button>
+                  <span>•</span>
+                  <span>{product.weight}</span>
                 </div>
 
-                <button
-                  onClick={handleAddToCart}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-black py-3 rounded-xl shadow-lg shadow-red-600/25 flex items-center justify-center space-x-2 rtl:space-x-reverse transition-all active:scale-95 text-xs sm:text-sm"
-                >
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>إضافة للسلة • {(product.price * qty).toFixed(2)} ج.م</span>
-                </button>
+                <div className="flex items-baseline gap-2 mt-3">
+                  <span className="text-2xl font-black text-red-600">
+                    {product.price.toFixed(0)} {t('currency')}
+                  </span>
+                  {product.originalPrice && (
+                    <span className="text-xs text-slate-400 line-through">
+                      {product.originalPrice.toFixed(0)} {t('currency')}
+                    </span>
+                  )}
+                </div>
+
+                {product.description && (
+                  <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+                    {product.description}
+                  </p>
+                )}
               </div>
 
-              {/* Instant WhatsApp Inquiry Button */}
-              <a
-                href={whatsappInquiryLink}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-black py-2.5 rounded-xl border border-emerald-300 flex items-center justify-center space-x-2 rtl:space-x-reverse text-xs transition-colors"
-              >
-                <MessageCircle className="w-4 h-4 text-emerald-600" />
-                <span>استفسر عن المنتج عبر الواتساب</span>
-              </a>
+              {/* Action Buttons */}
+              <div className="space-y-2 pt-2">
+                {isInStock ? (
+                  <div className="flex gap-2">
+                    <div className="flex items-center bg-slate-100 border border-slate-200 rounded-xl overflow-hidden">
+                      <button
+                        onClick={() => setQty(Math.max(1, qty - 1))}
+                        className="px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200"
+                      >
+                        -
+                      </button>
+                      <span className="px-3 py-2 text-xs font-black font-mono">{qty}</span>
+                      <button
+                        onClick={() => setQty(qty + 1)}
+                        className="px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={handleAddToCart}
+                      className="flex-1 py-3 bg-red-600 hover:bg-red-700 active:scale-98 text-white font-black text-xs sm:text-sm rounded-xl shadow transition-all flex items-center justify-center gap-2"
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                      <span>{t('addToCart')}</span>
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    disabled
+                    className="w-full py-3 bg-slate-100 text-slate-400 font-bold text-xs rounded-xl border border-slate-200 cursor-not-allowed"
+                  >
+                    {t('outOfStock')}
+                  </button>
+                )}
+
+                <a
+                  href={whatsappInquiryLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>{isInStock ? t('orderWhatsApp') : t('askRestock')}</span>
+                </a>
+              </div>
 
             </div>
-          </div>
 
+          </div>
         </div>
 
       </div>

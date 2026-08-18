@@ -1,30 +1,20 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
 import { MessageCircle, Phone, MapPin, Clock, ShieldCheck, Truck, CreditCard } from 'lucide-react';
-
-const NAV_LINKS = [
-  { label: "طعام القطط الجاف",    species: "cat",  cat: "dry-food"   },
-  { label: "رمل ونظافة القطط",    species: "cat",  cat: "litter"     },
-  { label: "طعام الكلاب",         species: "dog",  cat: "dry-food"   },
-  { label: "مكافآت الكلاب",       species: "dog",  cat: "wet-food"   },
-  { label: "ألعاب الحيوانات",     species: "all",  cat: "toys"       },
-  { label: "العناية والتمشيط",    species: "all",  cat: "grooming"   },
-  { label: "طعام الطيور",         species: "bird", cat: "dry-food"   },
-  { label: "إكسسوارات وأدوات",   species: "all",  cat: "accessories"},
-];
-
-const PERKS = [
-  { icon: Truck,        text: "توصيل سريع لجميع المحافظات"     },
-  { icon: MessageCircle,text: "طلب فوري عبر الواتساب"           },
-  { icon: CreditCard,   text: "دفع عند الاستلام أو بالكارت"    },
-  { icon: ShieldCheck,  text: "منتجات أصلية 100% مضمونة"        },
-];
+import { CATEGORIES } from '../data/products';
 
 export default function Footer() {
-  const { STORE_INFO } = useStore();
+  const { STORE_INFO, t, isArabic } = useStore();
+
+  const PERKS = [
+    { icon: Truck,        text: t('perkFastDelivery')   },
+    { icon: MessageCircle,text: t('perkWhatsAppOrder')  },
+    { icon: CreditCard,   text: t('perkPayment')        },
+    { icon: ShieldCheck,  text: t('perkOriginal')       },
+  ];
 
   return (
-    <footer className="bg-slate-950 text-white pt-10 sm:pt-14 pb-8 border-t border-white/5 font-sans w-full max-w-full overflow-hidden" dir="rtl">
+    <footer className="bg-slate-950 text-white pt-10 sm:pt-14 pb-8 border-t border-white/5 font-sans w-full max-w-full overflow-hidden" dir={isArabic ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto px-4 space-y-8 sm:space-y-12">
 
         {/* ── Top perks row ── */}
@@ -54,15 +44,15 @@ export default function Footer() {
               </svg>
               <div>
                 <div className="text-base sm:text-lg font-black text-white leading-none">Aleef Pets</div>
-                <div className="text-xs text-slate-400 font-medium">أليف بيتس</div>
+                <div className="text-xs text-slate-400 font-medium">{isArabic ? 'أليف بيتس' : 'Egypt'}</div>
               </div>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed font-medium">
-              متجرك المتخصص في أجود أنواع طعام القطط والكلاب والطيور مع توصيل سريع لجميع محافظات مصر.
+              {t('footerAbout')}
             </p>
             <div className="flex flex-wrap gap-2">
               <a
-                href={`https://wa.me/${STORE_INFO.whatsappNumber}?text=السلام%20عليكم%20أليف%20بيتس`}
+                href={`https://wa.me/${STORE_INFO.whatsappNumber}?text=${encodeURIComponent(isArabic ? 'السلام عليكم أليف بيتس' : 'Hello Aleef Pets')}`}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black px-3.5 py-2 rounded-xl transition-colors shadow"
@@ -71,7 +61,7 @@ export default function Footer() {
                 {STORE_INFO.phone1}
               </a>
               <a
-                href={`https://wa.me/${STORE_INFO.whatsappNumber2}?text=السلام%20عليكم%20أليف%20بيتس`}
+                href={`https://wa.me/${STORE_INFO.whatsappNumber2}?text=${encodeURIComponent(isArabic ? 'السلام عليكم أليف بيتس' : 'Hello Aleef Pets')}`}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black px-3.5 py-2 rounded-xl transition-colors shadow"
@@ -84,12 +74,12 @@ export default function Footer() {
 
           {/* Quick links */}
           <div className="space-y-2.5 sm:space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-widest text-red-400">أقسام المتجر</h4>
+            <h4 className="text-xs font-black uppercase tracking-widest text-red-400">{t('storeSections')}</h4>
             <ul className="space-y-1.5 sm:space-y-2">
-              {NAV_LINKS.slice(0, 6).map((l) => (
-                <li key={l.label}>
+              {CATEGORIES.slice(0, 6).map((c) => (
+                <li key={c.id}>
                   <a href="#products-section" className="text-xs text-slate-400 hover:text-white transition-colors font-medium leading-relaxed">
-                    {l.label}
+                    {isArabic ? c.label : (c.en || c.label)}
                   </a>
                 </li>
               ))}
@@ -98,18 +88,26 @@ export default function Footer() {
 
           {/* Policy */}
           <div className="space-y-2.5 sm:space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-widest text-red-400">الخدمة والسياسة</h4>
+            <h4 className="text-xs font-black uppercase tracking-widest text-red-400">{t('policies')}</h4>
             <ul className="space-y-1.5 sm:space-y-2 text-xs text-slate-400 font-medium">
-              <li className="hover:text-white transition-colors cursor-default">سياسة الشحن والتوصيل</li>
-              <li className="hover:text-white transition-colors cursor-default">سياسة الاستبدال والاسترجاع</li>
-              <li className="hover:text-white transition-colors cursor-default">ضمان المنتجات الأصلية 100%</li>
-              <li className="hover:text-white transition-colors cursor-default">تواصل معنا للدعم الفني</li>
+              <li className="hover:text-white transition-colors cursor-default">
+                {isArabic ? 'سياسة الشحن والتوصيل' : 'Shipping & Delivery Policy'}
+              </li>
+              <li className="hover:text-white transition-colors cursor-default">
+                {isArabic ? 'سياسة الاستبدال والاسترجاع' : 'Returns & Exchange Policy'}
+              </li>
+              <li className="hover:text-white transition-colors cursor-default">
+                {isArabic ? 'ضمان المنتجات الأصلية 100%' : '100% Authentic Guarantee'}
+              </li>
+              <li className="hover:text-white transition-colors cursor-default">
+                {isArabic ? 'تواصل معنا للدعم الفني' : 'Customer Support & Help'}
+              </li>
             </ul>
           </div>
 
           {/* Contact */}
           <div className="space-y-2.5 sm:space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-widest text-red-400">التواصل والمواعيد</h4>
+            <h4 className="text-xs font-black uppercase tracking-widest text-red-400">{t('contactAndHours')}</h4>
             <div className="space-y-2 text-xs">
               <div className="flex items-start gap-2 text-slate-400">
                 <MapPin className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
@@ -128,15 +126,15 @@ export default function Footer() {
 
         </div>
 
-        {/* ── Bottom bar (Clean customer copyright, no admin button) ── */}
-        <div className="pt-6 sm:pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 text-center sm:text-right">
-          <p>© {new Date().getFullYear()} Aleef Pets — أليف بيتس مصر. جميع الحقوق محفوظة.</p>
+        {/* ── Bottom bar ── */}
+        <div className={`pt-6 sm:pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 ${isArabic ? 'text-right' : 'text-left'}`}>
+          <p>© {new Date().getFullYear()} Aleef Pets — {t('allRightsReserved')}</p>
           <div className="flex items-center justify-center gap-3 font-semibold text-slate-400 flex-wrap">
-            <span>دفع عند الاستلام</span>
+            <span>{isArabic ? 'دفع عند الاستلام' : 'Cash on Delivery'}</span>
             <span>·</span>
-            <span>فيزا وانستاباي</span>
+            <span>{isArabic ? 'فيزا وانستاباي' : 'Visa & InstaPay'}</span>
             <span>·</span>
-            <span>خدمة التوصيل السريع</span>
+            <span>{isArabic ? 'خدمة التوصيل السريع' : 'Express Delivery'}</span>
           </div>
         </div>
 

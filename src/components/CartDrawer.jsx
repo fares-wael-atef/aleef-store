@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useStore } from '../context/StoreContext';
 import { X, Trash2, ShoppingBag, ArrowLeft, Tag, Truck } from 'lucide-react';
-import { STORE_INFO } from '../data/products';
 
 export default function CartDrawer() {
   const {
@@ -21,7 +20,10 @@ export default function CartDrawer() {
     applyCoupon,
     removeCoupon,
     setIsCheckoutOpen,
-    isFreeShipping
+    isFreeShipping,
+    STORE_INFO,
+    t,
+    isArabic
   } = useStore();
 
   if (!isCartOpen) return null;
@@ -36,24 +38,24 @@ export default function CartDrawer() {
     setIsCheckoutOpen(true);
   };
 
-  const freeShippingDiff = STORE_INFO.freeShippingThreshold - subtotal;
-  const progressPercent = Math.min(100, (subtotal / STORE_INFO.freeShippingThreshold) * 100);
+  const freeShippingDiff = (STORE_INFO.freeShippingThreshold || 500) - subtotal;
+  const progressPercent = Math.min(100, (subtotal / (STORE_INFO.freeShippingThreshold || 500)) * 100);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-950/60 backdrop-blur-sm animate-fade-in" dir="rtl">
-      <div className="absolute inset-y-0 left-0 max-w-full flex pr-10">
-        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col border-r border-red-100">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-950/60 backdrop-blur-sm animate-fade-in" dir={isArabic ? 'rtl' : 'ltr'}>
+      <div className={`absolute inset-y-0 ${isArabic ? 'left-0 pr-10' : 'right-0 pl-10'} max-w-full flex`}>
+        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col border-slate-100">
           
           {/* Header */}
-          <div className="bg-gradient-to-r from-red-600 via-red-500 to-red-600 p-5 text-white flex justify-between items-center shrink-0">
-            <div className="flex items-center space-x-2.5 rtl:space-x-reverse">
-              <div className="w-10 h-10 rounded-2xl bg-white/20 text-white flex items-center justify-center font-bold text-xl backdrop-blur-sm">
-                <ShoppingBag className="w-5 h-5 text-white" />
+          <div className="bg-[#DC2626] p-4 text-white flex justify-between items-center shrink-0">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center font-bold backdrop-blur-sm">
+                <ShoppingBag className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-black tracking-tight">سلة التسوق • أليف بيتس</h3>
+                <h3 className="text-base font-black tracking-tight">{t('cartTitle')}</h3>
                 <p className="text-xs font-bold text-red-100">
-                  {cart.length} {cart.length === 1 ? 'منتج' : 'منتجات'}
+                  {cart.length} {t('itemsCount')}
                 </p>
               </div>
             </div>
@@ -61,26 +63,29 @@ export default function CartDrawer() {
               onClick={() => setIsCartOpen(false)}
               className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/30 flex items-center justify-center font-bold text-white transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Free Shipping Progress Bar */}
-          <div className="bg-red-50 p-3.5 border-b border-red-100 shrink-0">
-            <div className="flex items-center justify-between text-xs font-black text-slate-800 mb-1.5">
-              <div className="flex items-center space-x-1 rtl:space-x-reverse">
-                <Truck className="w-4 h-4 text-red-600" />
+          <div className="bg-red-50 p-3 border-b border-red-100 shrink-0">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-800 mb-1">
+              <div className="flex items-center gap-1.5">
+                <Truck className="w-3.5 h-3.5 text-red-600 shrink-0" />
                 <span>
                   {isFreeShipping
-                    ? '🎉 مبروك! حصلت على شحن مجاني لكافة المحافظات!'
-                    : `أضف بـ ${freeShippingDiff.toFixed(2)} ج.م للحصول على شحن مجاني`}
+                    ? (isArabic ? '🎉 مبروك! حصلت على شحن مجاني!' : '🎉 Congratulations! You have Free Shipping!')
+                    : (isArabic 
+                        ? `أضف بـ ${freeShippingDiff.toFixed(0)} ${t('currency')} للحصول على شحن مجاني`
+                        : `Add ${freeShippingDiff.toFixed(0)} ${t('currency')} more for Free Shipping`
+                      )}
                 </span>
               </div>
-              <span className="text-red-700 font-mono">{Math.round(progressPercent)}%</span>
+              <span className="font-mono text-[11px] text-red-700">{progressPercent.toFixed(0)}%</span>
             </div>
-            <div className="w-full h-2 bg-red-200/80 rounded-full overflow-hidden">
+            <div className="w-full bg-red-200 h-1.5 rounded-full overflow-hidden">
               <div
-                className="h-full bg-red-600 transition-all duration-500 rounded-full"
+                className="bg-red-600 h-full rounded-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -88,142 +93,150 @@ export default function CartDrawer() {
 
           {/* Cart Items List */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {cart.length > 0 ? (
-              cart.map((item) => (
-                <div
-                  key={item.product.id}
-                  className="flex items-center space-x-3 rtl:space-x-reverse bg-red-50/30 p-3 rounded-2xl border border-red-100"
+            {cart.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
+                <div className="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
+                  <ShoppingBag className="w-8 h-8" />
+                </div>
+                <h4 className="text-base font-black text-slate-800">{t('emptyCartTitle')}</h4>
+                <p className="text-xs text-slate-500 max-w-xs">{t('emptyCartSub')}</p>
+                <button
+                  onClick={() => setIsCartOpen(false)}
+                  className="bg-red-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow hover:bg-red-700 transition-colors"
                 >
-                  <img
-                    src={item.product.image}
-                    alt={item.product.arabicName || item.product.name}
-                    className="w-16 h-16 rounded-xl object-cover border border-red-100 shrink-0 bg-white"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-extrabold text-slate-950 truncate">
-                      {item.product.arabicName || item.product.name}
-                    </h4>
-                    <p className="text-[11px] font-black text-red-600">
-                      {item.product.price.toFixed(2)} {STORE_INFO.currencySymbol}
-                    </p>
-
-                    {/* Stepper */}
-                    <div className="flex items-center space-x-2 rtl:space-x-reverse mt-2">
-                      <div className="flex items-center border border-red-200 rounded-lg bg-white">
-                        <button
-                          onClick={() => updateCartQty(item.product.id, -1)}
-                          className="w-6 h-6 font-black text-slate-700 hover:bg-red-50 rounded-r-lg flex items-center justify-center text-xs"
-                        >
-                          -
-                        </button>
-                        <span className="w-7 text-center font-black text-xs text-slate-900">
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() => updateCartQty(item.product.id, 1)}
-                          className="w-6 h-6 font-black text-slate-700 hover:bg-red-50 rounded-l-lg flex items-center justify-center text-xs"
-                        >
-                          +
-                        </button>
+                  {t('startShopping')}
+                </button>
+              </div>
+            ) : (
+              cart.map((item) => {
+                const displayName = isArabic ? (item.product.arabicName || item.product.name) : item.product.name;
+                return (
+                  <div
+                    key={item.product.id}
+                    className="flex gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-100 relative group"
+                  >
+                    <img
+                      src={item.product.image}
+                      alt={displayName}
+                      className="w-16 h-16 object-cover rounded-xl bg-white shrink-0 border border-slate-200"
+                    />
+                    <div className="flex-1 flex flex-col justify-between min-w-0">
+                      <div>
+                        <span className="text-[9px] font-black text-red-600 uppercase tracking-wider">{item.product.brand}</span>
+                        <h4 className="text-xs font-bold text-slate-900 line-clamp-1">{displayName}</h4>
+                        <p className="text-xs font-black text-slate-800 mt-0.5">
+                          {(item.product.price * item.quantity).toFixed(0)} {t('currency')}
+                        </p>
                       </div>
 
-                      <button
-                        onClick={() => removeFromCart(item.product.id)}
-                        className="text-slate-400 hover:text-red-600 transition-colors p-1"
-                        title="حذف"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      {/* Quantity Controller */}
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center bg-white border border-slate-200 rounded-lg overflow-hidden shadow-xs">
+                          <button
+                            onClick={() => updateCartQty(item.product.id, -1)}
+                            className="px-2 py-0.5 text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+                          >
+                            -
+                          </button>
+                          <span className="px-2.5 py-0.5 text-xs font-black text-slate-800 font-mono">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateCartQty(item.product.id, 1)}
+                            className="px-2 py-0.5 text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={() => removeFromCart(item.product.id)}
+                          className="text-slate-400 hover:text-red-600 p-1 transition-colors"
+                          title="Remove item"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="text-left">
-                    <span className="text-xs font-black text-slate-950">
-                      {(item.product.price * item.quantity).toFixed(2)} {STORE_INFO.currencySymbol}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-16 space-y-3">
-                <div className="w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto text-3xl">
-                  🛒
-                </div>
-                <h4 className="text-sm font-black text-slate-900">سلتك فارغة حالياً</h4>
-                <p className="text-xs text-slate-500">اختر طعام جاف أو مستلزمات لأليفك وأضفها للسلة!</p>
-              </div>
+                );
+              })
             )}
           </div>
 
-          {/* Cart Footer */}
+          {/* Footer Summary & Checkout */}
           {cart.length > 0 && (
-            <div className="p-5 bg-white border-t border-red-100 space-y-4 shrink-0 shadow-lg">
+            <div className="p-4 bg-white border-t border-slate-100 shadow-lg space-y-3 shrink-0">
               
-              {/* Promo Code Box */}
+              {/* Promo Code Form */}
               <form onSubmit={handleApplyPromo} className="flex gap-2">
                 <div className="relative flex-1">
+                  <Tag className={`absolute ${isArabic ? 'right-2.5' : 'left-2.5'} top-2.5 w-3.5 h-3.5 text-slate-400`} />
                   <input
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="كود الخصم (ALEEFPETS10)"
-                    className="w-full pr-8 pl-3 py-2 bg-red-50/40 border border-red-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-red-400 uppercase"
+                    placeholder={t('couponCode')}
+                    disabled={!!appliedCoupon}
+                    className={`w-full ${isArabic ? 'pr-8 pl-3' : 'pl-8 pr-3'} py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold uppercase focus:outline-none focus:ring-2 focus:ring-red-400`}
                   />
-                  <Tag className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5" />
                 </div>
-                <button
-                  type="submit"
-                  className="bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-black hover:bg-red-700 transition-colors shadow-sm"
-                >
-                  تطبيق
-                </button>
+                {appliedCoupon ? (
+                  <button
+                    type="button"
+                    onClick={removeCoupon}
+                    className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-xl text-xs font-bold transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors"
+                  >
+                    {t('applyCoupon')}
+                  </button>
+                )}
               </form>
 
-              {appliedCoupon && (
-                <div className="flex items-center justify-between bg-red-100 p-2 rounded-lg text-xs font-black text-red-900">
-                  <span>تم تطبيق الخصم: {appliedCoupon}</span>
-                  <button onClick={removeCoupon} className="text-red-600 font-extrabold hover:underline">
-                    إزالة
-                  </button>
+              {/* Price Breakdown */}
+              <div className="space-y-1.5 text-xs">
+                <div className="flex justify-between text-slate-600 font-medium">
+                  <span>{t('subtotal')}</span>
+                  <span className="font-bold">{subtotal.toFixed(0)} {t('currency')}</span>
                 </div>
-              )}
 
-              {/* Totals Breakdown */}
-              <div className="space-y-1 text-xs font-bold">
-                <div className="flex justify-between text-slate-600">
-                  <span>المجموع الفرعي</span>
-                  <span>{subtotal.toFixed(2)} {STORE_INFO.currencySymbol}</span>
-                </div>
                 {discount > 0 && (
-                  <div className="flex justify-between text-red-600 font-black">
-                    <span>الخصم</span>
-                    <span>-{discount.toFixed(2)} {STORE_INFO.currencySymbol}</span>
+                  <div className="flex justify-between text-emerald-600 font-bold">
+                    <span>خصم الكوبون</span>
+                    <span>-{discount.toFixed(0)} {t('currency')}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-slate-600">
-                  <span>رسوم التوصيل</span>
-                  <span>{shippingFee === 0 ? 'مجاناً ⚡' : `${shippingFee.toFixed(2)} ${STORE_INFO.currencySymbol}`}</span>
+
+                <div className="flex justify-between text-slate-600 font-medium">
+                  <span>{t('deliveryFee')}</span>
+                  <span className="font-bold">
+                    {isFreeShipping ? (
+                      <span className="text-emerald-600 font-black">{t('freeShippingBadge')}</span>
+                    ) : (
+                      `${shippingFee.toFixed(0)} ${t('currency')}`
+                    )}
+                  </span>
                 </div>
-                <div className="flex justify-between text-base font-black text-slate-950 pt-2 border-t border-red-100">
-                  <span>الإجمالي النهائي</span>
-                  <span className="text-red-600">{totalAmount.toFixed(2)} {STORE_INFO.currencySymbol}</span>
+
+                <div className="flex justify-between text-sm font-black text-slate-900 pt-2 border-t border-slate-100">
+                  <span>{t('total')}</span>
+                  <span className="text-base font-black text-red-600">{totalAmount.toFixed(0)} {t('currency')}</span>
                 </div>
               </div>
 
-              {/* Checkout CTA */}
+              {/* Checkout Button */}
               <button
                 onClick={handleProceedCheckout}
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-black py-3.5 rounded-2xl shadow-lg shadow-red-600/30 flex items-center justify-center space-x-2 rtl:space-x-reverse transition-all active:scale-95 text-sm"
+                className="w-full py-3 bg-red-600 hover:bg-red-700 active:scale-98 text-white font-black text-sm rounded-xl shadow-lg shadow-red-600/30 transition-all flex items-center justify-center gap-2"
               >
-                <span>متابعة الشراء وتحديد موقع التوصيل</span>
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={clearCart}
-                className="w-full text-center text-xs text-slate-400 hover:text-red-600 font-extrabold"
-              >
-                تفريغ السلة
+                <span>{t('proceedToCheckout')}</span>
+                <ArrowLeft className={`w-4 h-4 ${!isArabic ? 'rotate-180' : ''}`} />
               </button>
 
             </div>
