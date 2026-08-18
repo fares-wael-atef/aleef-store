@@ -1,89 +1,139 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
-import { Sparkles, MessageCircle, ArrowLeft, PhoneCall } from 'lucide-react';
+import { MessageCircle, ArrowLeft, ShieldCheck, Truck, CreditCard } from 'lucide-react';
 import { STORE_INFO } from '../data/products';
 
+const TRUST_BADGES = [
+  { icon: Truck,        text: "توصيل سريع لجميع المحافظات"     },
+  { icon: MessageCircle,text: "طلب فوري عبر الواتساب"           },
+  { icon: CreditCard,   text: "دفع عند الاستلام أو بالكارت"    },
+  { icon: ShieldCheck,  text: "منتجات أصلية 100% مضمونة"        },
+];
+
+const CATEGORY_SHORTCUTS = [
+  { label: "طعام قطط جاف",    species: "cat",  category: "dry-food"  },
+  { label: "رمل قطط",         species: "cat",  category: "litter"    },
+  { label: "طعام كلاب",       species: "dog",  category: "dry-food"  },
+  { label: "مكافآت وعلاجات",  species: "dog",  category: "wet-food"  },
+  { label: "طعام طيور",       species: "bird", category: "dry-food"  },
+  { label: "العناية والتمشيط",species: "cat",  category: "grooming"  },
+];
+
 export default function HeroBanner() {
-  const { setSelectedSpecies } = useStore();
+  const { setSelectedSpecies, setSelectedCategory } = useStore();
+
+  const handleShortcut = (species, category) => {
+    setSelectedSpecies(species);
+    setSelectedCategory(category);
+    document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-    <div className="relative overflow-hidden bg-slate-100/60 py-6 sm:py-8 border-b border-red-100">
-      <div className="max-w-7xl mx-auto px-4">
-        
-        {/* Banner Card Container */}
-        <div className="bg-gradient-to-r from-red-100/80 via-white to-rose-50 rounded-3xl border border-red-200 p-6 sm:p-8 shadow-sm relative overflow-hidden">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-            
-            {/* Pets Illustration Image */}
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="relative rounded-2xl overflow-hidden shadow-lg border-2 border-white bg-red-100 max-w-md w-full h-52 sm:h-64">
-                <img
-                  src="https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=800&q=80"
-                  alt="أليف بيتس - عروض طعام ومستلزمات الحيوانات الأليفة"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-3 left-3 bg-red-600 text-white font-black text-xs px-3 py-1.5 rounded-full shadow-md">
-                  أليف بيتس مصر 🇪🇬
-                </div>
-                <div className="absolute bottom-3 right-3 bg-slate-950/80 backdrop-blur-sm text-white text-[11px] font-bold px-3 py-1 rounded-xl">
-                  📞 {STORE_INFO.phone1} / {STORE_INFO.phone2}
-                </div>
-              </div>
-            </div>
+    <section className="relative overflow-hidden hero-bg" dir="rtl">
 
-            {/* Main Offer Announcement (Center / Spans full remaining space) */}
-            <div className="lg:col-span-7 text-center lg:text-right space-y-4">
-              <div className="inline-flex items-center space-x-1.5 rtl:space-x-reverse bg-red-100 text-red-900 text-xs font-black px-3.5 py-1.5 rounded-full border border-red-300 shadow-sm">
-                <Sparkles className="w-4 h-4 text-red-600 animate-pulse" />
-                <span>أليف بيتس (Aleef Pets) - أقوى عروض طعام ومستلزمات الحيوانات الأليفة 🎉</span>
-              </div>
+      {/* ── Background layer ── */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Right side image panel */}
+        <div className="absolute inset-y-0 left-0 w-1/2 hidden lg:block overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=900&q=80"
+            alt=""
+            className="w-full h-full object-cover object-center opacity-25"
+            loading="eager"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#1e1a1a]/60 to-[#1e1a1a]" />
+        </div>
+        {/* Subtle red glow */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl translate-x-1/3 -translate-y-1/3" />
+      </div>
 
-              <h1 className="text-2xl sm:text-4xl font-black text-slate-950 leading-tight">
-                خصومات تصل إلى <span className="text-red-600 underline decoration-red-300">30%</span> على أفضل الماركات!
-              </h1>
+      {/* ── Content ── */}
+      <div className="relative max-w-7xl mx-auto px-4 py-12 sm:py-16 lg:py-20">
+        <div className="max-w-2xl">
 
-              <p className="text-xs sm:text-sm text-slate-600 font-bold max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                أجود أنواع طعام القطط والكلاب الجاف (Dry Food) والرطب، رمل كندي فاخر، مكافآت وألعاب مع توصيل سريع لجميع المحافظات: القاهرة، الجيزة، الإسكندرية، التجمع، والشيخ زايد!
-              </p>
+          {/* Eyebrow */}
+          <div className="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/30 text-red-300 text-xs font-bold px-3 py-1.5 rounded-full mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+            متجر أليف بيتس — القاهرة ومصر كلها
+          </div>
 
-              {/* Action Buttons with both WhatsApp numbers */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
-                <button
-                  onClick={() => setSelectedSpecies('cat')}
-                  className="bg-red-600 hover:bg-red-700 text-white font-black px-6 py-3 rounded-xl shadow-md shadow-red-600/25 transition-all flex items-center space-x-2 rtl:space-x-reverse text-xs sm:text-sm active:scale-95"
-                >
-                  <span>تسوق منتجات Dry Food</span>
-                  <ArrowLeft className="w-4 h-4" />
-                </button>
+          {/* Headline */}
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight mb-4">
+            أليفك يستحق
+            <span className="text-red-400"> الأفضل</span>
+            <br />
+            <span className="text-2xl sm:text-3xl font-bold text-slate-300">
+              طعام وأدوات عالمية بأسعار مصرية
+            </span>
+          </h1>
 
-                <a
-                  href={`https://wa.me/${STORE_INFO.whatsappNumber}?text=السلام%20عليكم%20أليف%20بيتس!%20أريد%20الطلب%20والاستفسار`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 sm:px-5 py-3 rounded-xl shadow transition-all flex items-center space-x-2 rtl:space-x-reverse text-xs sm:text-sm active:scale-95"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>واتساب 1: {STORE_INFO.phone1}</span>
-                </a>
+          {/* Sub */}
+          <p className="text-slate-400 text-sm sm:text-base font-medium leading-relaxed mb-8 max-w-lg">
+            Royal Canin · Purina Pro Plan · Hill's Science Diet · OdorLock · FURminator
+            وأكثر من 100 منتج أصلي مع توصيل سريع لباب بيتك.
+          </p>
 
-                <a
-                  href={`https://wa.me/${STORE_INFO.whatsappNumber2}?text=السلام%20عليكم%20أليف%20بيتس!%20أريد%20الطلب%20والاستفسار`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-black px-4 sm:px-5 py-3 rounded-xl shadow transition-all flex items-center space-x-2 rtl:space-x-reverse text-xs sm:text-sm active:scale-95"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>واتساب 2: {STORE_INFO.phone2}</span>
-                </a>
-              </div>
-            </div>
+          {/* CTAs */}
+          <div className="flex flex-wrap items-center gap-3 mb-10">
+            <button
+              onClick={() => document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' })}
+              className="btn-primary flex items-center gap-2 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-black px-6 py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-all text-sm"
+            >
+              تسوق الآن
+              <ArrowLeft className="w-4 h-4" />
+            </button>
 
+            <a
+              href={`https://wa.me/${STORE_INFO.whatsappNumber}?text=السلام%20عليكم%20أليف%20بيتس%20-%20أريد%20الاستفسار`}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-whatsapp flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black px-5 py-3.5 rounded-xl transition-all text-sm shadow"
+            >
+              <MessageCircle className="w-4 h-4" />
+              اطلب عبر الواتساب
+            </a>
+
+            <a
+              href={`https://wa.me/${STORE_INFO.whatsappNumber2}?text=السلام%20عليكم%20أليف%20بيتس`}
+              target="_blank"
+              rel="noreferrer"
+              className="hidden sm:flex items-center gap-2 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/30 font-bold px-4 py-3.5 rounded-xl transition-all text-xs"
+            >
+              <MessageCircle className="w-4 h-4" />
+              {STORE_INFO.phone2}
+            </a>
+          </div>
+
+          {/* Category shortcuts */}
+          <div className="flex flex-wrap gap-2">
+            {CATEGORY_SHORTCUTS.map((s) => (
+              <button
+                key={s.label}
+                onClick={() => handleShortcut(s.species, s.category)}
+                className="glass text-white text-xs font-semibold px-3.5 py-1.5 rounded-full hover:bg-white/15 transition-all"
+              >
+                {s.label}
+              </button>
+            ))}
           </div>
 
         </div>
-
       </div>
-    </div>
+
+      {/* ── Trust badges strip ── */}
+      <div className="relative border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 py-4 grid grid-cols-2 lg:grid-cols-4 gap-y-3 gap-x-4">
+          {TRUST_BADGES.map(({ icon: Icon, text }) => (
+            <div key={text} className="flex items-center gap-2.5 text-slate-300">
+              <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                <Icon className="w-4 h-4 text-red-400" />
+              </div>
+              <span className="text-xs font-semibold leading-tight">{text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </section>
   );
 }
