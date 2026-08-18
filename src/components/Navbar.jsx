@@ -23,16 +23,6 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 shadow-sm font-sans w-full max-w-full overflow-hidden" dir={isArabic ? 'rtl' : 'ltr'}>
 
-      {/* ── Top Announcement Bar (Clean without language pill) ── */}
-      <div className="bg-slate-950 text-white py-1 px-3 sm:px-4 text-[10px] sm:text-xs font-semibold tracking-wide border-b border-white/5 w-full text-center">
-        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 overflow-hidden">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-          <span className="truncate">
-            {t('announcement')}
-          </span>
-        </div>
-      </div>
-
       {/* ── Main Red Header with Language Option ── */}
       <div className="bg-[#DC2626] px-3 sm:px-4 py-2.5 sm:py-3 w-full">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
