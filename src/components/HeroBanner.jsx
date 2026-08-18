@@ -1,26 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MessageCircle, ChevronLeft, ChevronRight, Sparkles, ArrowDown } from 'lucide-react';
+import { MessageCircle, ChevronLeft, ChevronRight, ArrowDown } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 
 const SLIDES_DATA = [
   {
     video: "https://videos.pexels.com/video-files/4588013/4588013-hd_1920_1080_30fps.mp4",
     poster: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1600&q=80",
-    badgeKey: "heroBadge1",
     titleKey: "heroTitle1",
     subKey: "heroSub1",
   },
   {
     video: "https://videos.pexels.com/video-files/4498159/4498159-hd_1920_1080_25fps.mp4",
     poster: "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1600&q=80",
-    badgeKey: "heroBadge2",
     titleKey: "heroTitle2",
     subKey: "heroSub2",
   },
   {
     video: "https://videos.pexels.com/video-files/4786001/4786001-hd_1920_1080_30fps.mp4",
     poster: "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=1600&q=80",
-    badgeKey: "heroBadge3",
     titleKey: "heroTitle3",
     subKey: "heroSub3",
   },
@@ -121,16 +118,10 @@ export default function HeroBanner() {
         </div>
       ))}
 
-      {/* ── Foreground Text & CTAs ── */}
+      {/* ── Foreground Text & CTAs (No badge pill) ── */}
       <div className="relative z-20 h-full flex items-center w-full">
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-8 py-6">
           <div className={`max-w-xl space-y-3 sm:space-y-4 ${isArabic ? 'text-right' : 'text-left'}`}>
-            
-            {/* Pill Badge */}
-            <div className="inline-flex items-center gap-1.5 bg-red-600/30 border border-red-500/40 text-red-300 text-[10px] sm:text-[11px] font-black px-3 py-1 rounded-full backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-red-400 shrink-0" />
-              <span>{t(SLIDES_DATA[current].badgeKey)}</span>
-            </div>
 
             {/* Slide Title */}
             <h1
@@ -176,7 +167,7 @@ export default function HeroBanner() {
       {/* ── Slide Arrows Controls ── */}
       <button
         onClick={prevSlide}
-        className={`hidden sm:flex absolute ${isArabic ? 'left-4' : 'left-4'} top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white items-center justify-center backdrop-blur-md border border-white/15 transition-all active:scale-90`}
+        className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white items-center justify-center backdrop-blur-md border border-white/15 transition-all active:scale-90"
         aria-label="Previous Slide"
       >
         <ChevronLeft className="w-5 h-5" />
@@ -184,7 +175,7 @@ export default function HeroBanner() {
 
       <button
         onClick={nextSlide}
-        className={`hidden sm:flex absolute ${isArabic ? 'right-4' : 'right-4'} top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white items-center justify-center backdrop-blur-md border border-white/15 transition-all active:scale-90`}
+        className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white items-center justify-center backdrop-blur-md border border-white/15 transition-all active:scale-90"
         aria-label="Next Slide"
       >
         <ChevronRight className="w-5 h-5" />
