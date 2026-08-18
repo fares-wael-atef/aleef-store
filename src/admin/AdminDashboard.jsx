@@ -1,12 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
 import { 
   ORDER_STATUSES, 
   getStatusInfo, 
   isAdminAuthenticated, 
   setAdminAuthenticated, 
-  verifyAdminPassword,
-  playOrderNotificationSound
+  verifyAdminPassword
 } from './adminUtils';
 import { 
   BarChart3, 
@@ -14,7 +13,7 @@ import {
   ShoppingCart, 
   Plus, 
   Search, 
-  Edit, 
+  Edit3, 
   Trash2, 
   LogOut, 
   Store, 
@@ -27,7 +26,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   RotateCcw,
-  Check
+  Check,
+  Eye
 } from 'lucide-react';
 import { CATEGORIES, SPECIES_LIST } from '../data/products';
 
@@ -51,7 +51,7 @@ export default function AdminDashboard() {
   const [loginError, setLoginError] = useState('');
 
   // ── Navigation Tabs ('dashboard' | 'products' | 'orders') ──
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('products');
 
   // ── Filter & Search State ──
   const [productSearch, setProductSearch] = useState('');
@@ -160,8 +160,10 @@ export default function AdminDashboard() {
 
     if (editingProduct) {
       updateProduct(editingProduct.id, payload);
+      showToast(`Updated "${payload.name}" — live on storefront!`);
     } else {
       addProduct(payload);
+      showToast(`Added "${payload.name}" — live on storefront!`);
     }
 
     setIsModalOpen(false);
@@ -201,10 +203,10 @@ export default function AdminDashboard() {
     return true;
   });
 
-  // ── 1. LIGHT MODE LOGIN VIEW ──
+  // ── 1. LIGHT MODE LOGIN VIEW (LTR) ──
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center p-4 font-sans text-slate-800">
+      <div dir="ltr" className="min-h-screen bg-[#f8f9fa] flex items-center justify-center p-4 font-sans text-slate-800">
         <div className="w-full max-w-sm bg-white border border-slate-200 rounded-3xl p-8 shadow-xl space-y-6">
           <div className="text-center space-y-2">
             <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto">
@@ -261,12 +263,12 @@ export default function AdminDashboard() {
     );
   }
 
-  // ── 2. LIGHT MODE ADMIN PORTAL ──
+  // ── 2. LIGHT MODE ADMIN PORTAL (EXPLICIT LTR) ──
   return (
-    <div className="min-h-screen bg-[#f8f9fa] font-sans text-slate-800 flex">
+    <div dir="ltr" className="min-h-screen bg-[#f8f9fa] font-sans text-slate-800 flex text-left">
       
       {/* ── Left Sidebar ── */}
-      <aside className="w-56 bg-white border-r border-slate-200 flex flex-col shrink-0 min-h-screen">
+      <aside className="w-60 bg-white border-r border-slate-200 flex flex-col shrink-0 min-h-screen">
         
         {/* Brand */}
         <div className="p-5 border-b border-slate-100 flex items-center gap-2.5">
@@ -357,7 +359,7 @@ export default function AdminDashboard() {
           </h2>
           <div className="flex items-center gap-3">
             <span className="text-xs font-medium text-slate-400">
-              Aleef Store Egypt
+              Aleef Store Egypt · Changes save automatically
             </span>
           </div>
         </header>
@@ -366,7 +368,7 @@ export default function AdminDashboard() {
         <main className="p-6 overflow-y-auto space-y-6">
 
           {/* ═══════════════════════════════════════════════════════
-              1. DASHBOARD VIEW (Clean light cards & recent orders)
+              1. DASHBOARD VIEW
           ═══════════════════════════════════════════════════════ */}
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
@@ -476,7 +478,7 @@ export default function AdminDashboard() {
           )}
 
           {/* ═══════════════════════════════════════════════════════
-              2. PRODUCTS VIEW (Table matching reference screenshot)
+              2. PRODUCTS VIEW (LTR with iPhone Toggle & Real Buttons)
           ═══════════════════════════════════════════════════════ */}
           {activeTab === 'products' && (
             <div className="space-y-4">
@@ -513,12 +515,12 @@ export default function AdminDashboard() {
                   <table className="w-full text-left text-xs">
                     <thead className="bg-slate-50/70 border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
                       <tr>
-                        <th className="p-3.5">IMAGE</th>
+                        <th className="p-3.5 w-16">IMAGE</th>
                         <th className="p-3.5">NAME</th>
                         <th className="p-3.5">CATEGORY</th>
                         <th className="p-3.5">PRICE</th>
-                        <th className="p-3.5 text-center">STOCK</th>
-                        <th className="p-3.5 text-right">ACTIONS</th>
+                        <th className="p-3.5 text-center w-28">STOCK</th>
+                        <th className="p-3.5 text-right w-40">ACTIONS</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -555,43 +557,48 @@ export default function AdminDashboard() {
                               {p.price.toFixed(2)} ج.م
                             </td>
 
-                            {/* Stock Toggle Switch */}
+                            {/* iOS Style iPhone Toggle Switch */}
                             <td className="p-3.5 text-center">
-                              <button
-                                onClick={() => toggleProductStock(p.id)}
-                                className={`w-10 h-5 rounded-full transition-colors relative inline-flex items-center p-0.5 ${
-                                  inStock ? 'bg-emerald-600' : 'bg-slate-300'
-                                }`}
-                                title={inStock ? 'In Stock (Click to disable)' : 'Out of Stock (Click to enable)'}
-                              >
-                                <span
-                                  className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                                    inStock ? 'translate-x-5' : 'translate-x-0.5'
+                              <div className="flex items-center justify-center">
+                                <button
+                                  type="button"
+                                  onClick={() => toggleProductStock(p.id)}
+                                  className={`w-11 h-6 rounded-full transition-colors duration-200 ease-in-out relative flex items-center p-0.5 shadow-inner focus:outline-none ${
+                                    inStock ? 'bg-[#34C759]' : 'bg-slate-300'
                                   }`}
-                                />
-                              </button>
+                                  title={inStock ? 'In Stock (Click to turn off)' : 'Out of Stock (Click to turn on)'}
+                                >
+                                  <span
+                                    className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out ${
+                                      inStock ? 'translate-x-5' : 'translate-x-0'
+                                    }`}
+                                  />
+                                </button>
+                              </div>
                             </td>
 
-                            {/* Actions (Edit / Delete) */}
+                            {/* Actions: Real "Edit" & "Delete" Buttons */}
                             <td className="p-3.5 text-right">
-                              <div className="inline-flex items-center gap-2">
+                              <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   onClick={() => handleOpenEdit(p)}
-                                  className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                                  className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2.5 py-1.5 rounded-lg text-xs transition-colors shadow-xs"
                                   title="Edit product"
                                 >
-                                  ✏️
+                                  <Edit3 className="w-3 h-3 text-slate-600" />
+                                  <span>Edit</span>
                                 </button>
                                 <button
                                   onClick={() => {
-                                    if (window.confirm(`Delete "${p.name || p.arabicName}"?`)) {
+                                    if (window.confirm(`Are you sure you want to delete "${p.name || p.arabicName}"?`)) {
                                       deleteProduct(p.id);
                                     }
                                   }}
-                                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                  className="inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold px-2.5 py-1.5 rounded-lg text-xs transition-colors shadow-xs"
                                   title="Delete product"
                                 >
-                                  🗑️
+                                  <Trash2 className="w-3 h-3" />
+                                  <span>Delete</span>
                                 </button>
                               </div>
                             </td>
@@ -608,7 +615,7 @@ export default function AdminDashboard() {
           )}
 
           {/* ═══════════════════════════════════════════════════════
-              3. ORDERS VIEW (Orders Table & Status management)
+              3. ORDERS VIEW (LTR with Status & Actions)
           ═══════════════════════════════════════════════════════ */}
           {activeTab === 'orders' && (
             <div className="space-y-4">
@@ -706,7 +713,7 @@ export default function AdminDashboard() {
                               {order.totalAmount} ج.م
                             </td>
 
-                            {/* Actions */}
+                            {/* Actions: Real "Delete" button */}
                             <td className="p-3.5 text-right">
                               <button
                                 onClick={() => {
@@ -714,10 +721,11 @@ export default function AdminDashboard() {
                                     deleteOrder(order.orderId);
                                   }
                                 }}
-                                className="p-1 text-slate-400 hover:text-red-600 transition-colors"
-                                title="Delete"
+                                className="inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold px-2.5 py-1.5 rounded-lg text-xs transition-colors"
+                                title="Delete Order"
                               >
-                                🗑️
+                                <Trash2 className="w-3 h-3" />
+                                <span>Delete</span>
                               </button>
                             </td>
 
@@ -747,8 +755,8 @@ export default function AdminDashboard() {
           LIGHT MODAL: ADD / EDIT PRODUCT
       ═══════════════════════════════════════════════════════════ */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-fade-in font-sans">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl">
+        <div dir="ltr" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-fade-in font-sans">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl text-left">
             
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -865,12 +873,15 @@ export default function AdminDashboard() {
 
               {/* In-Stock Switch */}
               <label className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer">
-                <span className="font-bold text-slate-800">In Stock (Available for purchase)</span>
+                <div>
+                  <div className="font-bold text-slate-800">In Stock (Available for purchase)</div>
+                  <div className="text-[10px] text-slate-500">Toggle off to mark as Out of Stock</div>
+                </div>
                 <input
                   type="checkbox"
                   checked={formData.inStock}
                   onChange={(e) => setFormData((p) => ({ ...p, inStock: e.target.checked }))}
-                  className="w-4 h-4 accent-emerald-700 rounded cursor-pointer"
+                  className="w-4 h-4 accent-[#34C759] rounded cursor-pointer"
                 />
               </label>
 
